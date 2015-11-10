@@ -1,0 +1,57 @@
+        # move_set = []
+        # for x, y in self.__delta_move:
+        #     mag_moves = []
+        #     for mag in range(1, magnitude):
+        #         if ((x + mag), (y + mag)) in self._moves_left:
+        #             mag_moves.append((x + mag, y + mag))
+        #     print(len(mag_moves) + 1, magnitude)
+        #     if magnitude == (len(mag_moves) + 1):
+        #         print("IN")
+        #         for item in mag_moves:
+        #             move_set.append(item)
+        # print(move_set)
+        #
+        # return move_set
+
+        # all_moves = []
+        # moves_possible = []
+        #
+        # for c_x, c_y in self.__delta_move:
+        #     for mag in range(1, magnitude):
+        #         if (coord[0] + (c_x * mag), coord[1] + (c_y * mag)) in self._moves_left:
+        #             all_moves.append((coord[0] + (c_x * mag), coord[1] + (c_y * mag)))
+        #     print(all_moves, "Len: %s, Mag: %s" % (len(all_moves), magnitude))
+        #     if magnitude == len(all_moves) + 1:
+        #         print("in")
+        #         moves_possible.append(all_moves)
+        #     all_moves = []
+        # print(moves_possible)
+        # return moves_possible
+
+        # a = [possible_move for possible_move in
+        #      [move for move in
+        #       [
+        #           [(coord[0] + (c_x * mag), coord[1] + (c_y * mag))
+        #            for mag in range(1, magnitude)]
+        #           for c_x, c_y in self.__delta_move] if move in self._moves_left]
+        #      if magnitude == len(possible_move) + 1]
+        # return a
+
+        # return [(coord[0] + x + mag, coord[1] + y + mag) for x, y in self.__delta_move for mag in range(1, magnitude) if (coord[0] + x + mag, coord[1] + y + mag) in self._moves_left]
+
+
+\\\\\\\\\\\\\\\
+old function for adjust hits
+\\\\\\\\\\\\\\\
+        # all_moves = [sublist_5 for sublist_5 in self.__check_adj_tiles(
+        #     [sublist_4 for sublist_4 in self.__check_adj_tiles(
+        #         [sublist_3 for sublist_3 in self.__check_adj_tiles(
+        #             [sublist_2 for sublist_2 in self.__check_adj_tiles(
+        #                 [sublist for sublist in self.__check_adj_tiles(self._hit_map)
+        #                  if sublist]) if sublist_2]) if sublist_3]) if sublist_4]) if sublist_5]
+        # for cord in all_moves:
+        #     self._point_map[cord] += 1
+
+\\\\\\\\\\\\\\\\\\\\\\\\\\\
+END
+\\\\\\\\\\\\\\\\\\\\\\\\\\\
