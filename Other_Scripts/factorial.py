@@ -3,7 +3,7 @@ import cProfile
 
 def factorial(number):
     """
-    This function calculates teh factorial of the given number.
+    This function calculates the factorial of the given number.
     Numbers over 1000 can take over 10secs!
     :param number: Number to calculate
     :return: Returns the value of the number calculated
@@ -52,4 +52,4 @@ def cf_range(num_range):
         for number in range(1, num_range + 1):
             file.write(str(factorial(number)) + "\n")
 
-cProfile.run("cf_range(5000)")
+cProfile.run("cf_range(1000)")

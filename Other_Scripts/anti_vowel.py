@@ -34,6 +34,7 @@ def anti_vowel(text):
             new_text.append(i)
     return "".join(new_text)
 
+
 def repeat_code(code, string):
     for x in range(500000):
         eval("%s(%s)" % (code, string))

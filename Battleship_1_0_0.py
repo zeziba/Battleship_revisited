@@ -14,17 +14,19 @@ from os.path import join as join_
 from os import getcwd
 from os import makedirs
 from os import path
+import time
 import cProfile
 
 Display = True
 Difficulty = 2
+start = 0
 Save_Stats = True
 Save_Point_Maps = True
 turns = 0
 _game_number = None
-_path = getcwd()
-_path_gamedata = join_(_path, "GameData")
-_path_gamedata_pointmaps = join_(_path_gamedata, "point_maps")
+path_ = getcwd()
+path_gamedata_ = join_(path_, "GameData")
+path_gamedata_pointmaps_ = join_(path_gamedata_, "point_maps")
 
 board_size = 10
 
@@ -62,25 +64,25 @@ out_put_data = {
 def _create_master_game_number(override=False):
     global _game_number
     try:
-        with open(join_(_path_gamedata, "GameNumber.txt"), "r+") as file:
+        with open(join_(path_gamedata_, "GameNumber.txt"), "r+") as file:
             file.seek(0)
             game_number = file.readline()
             _game_number = int(game_number[12:]) + 1 + (override if not override else 0)
-        with open(join_(_path_gamedata, "GameNumber.txt"), "w") as file:
+        with open(join_(path_gamedata_, "GameNumber.txt"), "w") as file:
             file.seek(0)
             file.write("Game Number: %s" % str(_game_number))
     except FileNotFoundError:
-        with open(join_(_path_gamedata, "GameNumber.txt"), "w") as file:
+        with open(join_(path_gamedata_, "GameNumber.txt"), "w") as file:
             file.seek(0)
             _game_number = 1
             file.write("Game Number: %s" % str(_game_number))
 
 
 def _create_dirs():
-    if not path.exists(_path_gamedata):
-        makedirs(join_(_path, "GameData"))
-    if not path.exists(_path_gamedata_pointmaps):
-        makedirs(join_(_path_gamedata, "point_maps"))
+    if not path.exists(path_gamedata_):
+        makedirs(join_(path_, "GameData"))
+    if not path.exists(path_gamedata_pointmaps_):
+        makedirs(join_(path_gamedata_, "point_maps"))
 
 
 def handle_player_input(func):
@@ -244,12 +246,15 @@ class GameWin(BaseException):
         """
         This function is used to save game data after a win.
         """
+        global start
         global turns
         if Save_Stats:
-            with open(join_(_path_gamedata, "battleship_stats.txt"), "a+") as file:
+            with open(join_(path_gamedata_, "battleship_stats.txt"), "a+") as file:
                 file.write(out_put_data[25] % (self.player, (self.hits+self.misses), self.hits,
                                                (self.hits / (self.hits+self.misses)), turns,
                                                self.difficulty if self.difficulty else "Player"))
+            with open(join_(path_gamedata_, "battleship_time.txt"), "a+") as file:
+                file.write("%s\n" % (time.time() - start))
         turns = 0
 
 
@@ -379,13 +384,14 @@ class Player(Board):
     This class has all the player functions and methods
     """
 
-    def __init__(self, type_player):
+    def __init__(self, type_player, p_number=0):
         """
         The __init__ sets the parameters for the player
         :param type_player: The passes argument tells the class what type the player is
         """
         Board.__init__(self)
         self.playerType = type_player
+        self.p_number = p_number
         self.misses = 0
         self.hits = 0
         # This list fills it's self with ships using the arguments inside
@@ -552,13 +558,13 @@ class AI(Player):
     There are three difficultly Ais in this class.
     """
 
-    def __init__(self, difficulty, type_player, point_map_state=False):
+    def __init__(self, difficulty, type_player, point_map_state=False, p_number=0):
         """
         The __init__ sets up the AI parameters
         :param difficulty: Difficulty 0-2 *easy-hard*
         :param type_player: Player type to be passed to the Player.__init__
         """
-        Player.__init__(self, type_player)
+        Player.__init__(self, type_player, p_number)
         self.difficulty = difficulty
         self.save_point_map = point_map_state
         self._hit_state = False
@@ -569,12 +575,35 @@ class AI(Player):
         self._point_map = {(x, y): 0 for x in range(1, self.sides+1) for y in range(1, self.sides+1)}
         self._hit_map = []
         self._last_hit = ()
+        self.vs_ship_left = {
+            'Aircraft Carrier': [False, 5],
+            'Battleship': [False, 4],
+            'Submarine': [False, 3],
+            'Destroyer': [False, 3],
+            'Patrol Boat': [False, 2]
+        }
         self.__delta_move = [
             (1, 0),
             (-1, 0),
             (0, 1),
             (0, -1)
         ]
+
+    def __flatten(self, a_list):
+        """
+        Flattens the given list of an arbitrary amount of lists/items into a single list with all values
+        :param a_list: Pass the list object you wish to flatten, no list will be left with in. Also maintains order.
+        :return: Returns this function with the hold list as an argument if there
+        are any list objects, else it returns the held list.
+        """
+        hold = []
+        for item in a_list:
+            if list == type(item):
+                for it in item:
+                    hold.append(it)
+            else:
+                hold.append(item)
+        return self.__flatten(hold) if any(type(part) == list for part in hold) else hold
 
     def __easy_difficulty(self):
         """
@@ -622,22 +651,21 @@ class AI(Player):
         :param magnitude: Pass how far out from cords you want to check
         :return: Returns a list of all adjacent cords
         """
-        return [cords for cords in
-                [
-                    [(coord[0] + (c_x * mag), coord[1] + (c_y * mag))
-                     for mag in range(1, magnitude) if (coord[0] + (c_x * mag), coord[1] + (c_y * mag)) in self._moves_left
-                    ] for c_x, c_y in self.__delta_move
-                ] if magnitude == len(cords) + 1
-        ]
-        # to_move = [possible_move for possible_move in
-        #            [move for move in
-        #             [
-        #                 [(coord[0] + (c_x * mag), coord[1] + (c_y * mag))
-        #                  for mag in range(1, magnitude)]
-        #                 for c_x, c_y in self.__delta_move] if coord in self._moves_left]
-        #            if magnitude == len(possible_move) + 1]
-        # movesa = [good_move for good_move in to_move if good_move in self._moves_left]
-        # return movesa
+
+        def _gen_move(delta_start, mag):
+            mag -= 1
+            while True:
+                yield (delta_start[0] * mag, delta_start[1]) if abs(delta_start[0]) \
+                    else (delta_start[0], delta_start[1] * mag)
+                mag -= 1
+                if not mag:
+                    break
+
+        return self.__flatten([moves for moves in [[(coord[0] + move[0], coord[1] + move[1])
+                                                    for move in ((delta[0] * mag, delta[1] * mag)
+                                                                 for mag in range(1, magnitude))
+                                                    if (coord[0] + move[0], coord[1] + move[1]) in self._moves_left]
+                                                   for delta in self.__delta_move] if len(moves) == magnitude-1])
 
     def __valid_attack_move(self, coord):
         """
@@ -645,13 +673,14 @@ class AI(Player):
         of cords that all player ships that can start at a give cord.
         :param coord: Cord to be checked
         """
-        test = [cord for cord_item in [item for sublist in
-                [self.__check_delta_moves(coord, ship_length+1) for ship_length in
-                 [self.fleet[ship].get_length() for ship in range(len(self.fleet)) if not self.fleet[ship]()]]
-                for item in sublist] for cord in cord_item]
 
-        for item in test:
-            self._point_map[item] += 1
+        ships_left = [values[1] for ship, values in self.vs_ship_left.items() if not values[0]]
+        hold = []
+        for i in ships_left:
+            hold.append(self.__check_delta_moves(coord, i))
+        hold2 = self.__flatten(hold)
+        for cord in hold2:
+            self._point_map[cord] += 1
         self._point_map[coord] += 1
 
     def __check_all_moves(self):
@@ -701,24 +730,8 @@ class AI(Player):
         This function adds points to the point map for all spaces adjacent to hit tiles if valid.
         """
 
-        def __flatten(a_list):
-            """
-            Flattens the given list of an arbitrary amount of lists/items into a single list with all values
-            :param a_list: Pass the list object you wish to flatten, no list will be left with in. Also maintains order.
-            :return: Returns this function with the hold list as an argument if there
-            are any list objects, else it returns the held list.
-            """
-            hold = []
-            for item in a_list:
-                if list == type(item):
-                    for it in item:
-                        hold.append(it)
-                else:
-                    hold.append(item)
-            return __flatten(hold) if any(type(part) == list for part in hold) else hold
 
-
-        adj_pos_moves = __flatten([cords for cords in [self.__check_delta_moves(move, 2) for move in self._hit_map]])
+        adj_pos_moves = self.__flatten([cords for cords in [self.__check_delta_moves(move, 2) for move in self._hit_map]])
         for cord in adj_pos_moves:
             self._point_map[cord] += 2
 
@@ -790,10 +803,10 @@ class AI(Player):
 
     def _save_ai_point_board(self):
         try:
-            with open(join_(_path_gamedata_pointmaps, "%s_%s.txt" % (_game_number, id(self.playerType))), "a+") as file:
+            with open(join_(path_gamedata_pointmaps_, "%s_%s_%s.txt" % (self.p_number, _game_number, id(self.playerType))), "a+") as file:
                 file.write("{'turn_%s': %s}\n" % (turns, str(self._point_map)))
         except FileNotFoundError:
-            open(join_(_path_gamedata_pointmaps, "%s_%s.txt" % (_game_number, id(self.playerType))), "w+").close()
+            open(join_(path_gamedata_pointmaps_, "%s_%s_%s.txt" % (self.p_number, _game_number, id(self.playerType))), "w+").close()
             self._save_ai_point_board()
 
 
@@ -802,6 +815,8 @@ def _start_game(display=True, override=False, wait_x=1):
     This function is used to control the game.
     :param wait_x: Inter-function Variable
     """
+    global start
+    start = time.time()
     global p1
     global p2
     global turns
@@ -812,23 +827,23 @@ def _start_game(display=True, override=False, wait_x=1):
     _create_master_game_number(override=override)
     display__start = Display
     if not display__start:
-        p1 = AI(difficulty=Difficulty, type_player='Machine_1', point_map_state=(True if Save_Point_Maps else False))
+        p1 = AI(difficulty=Difficulty, type_player='Machine_1', point_map_state=(True if Save_Point_Maps else False), p_number=1)
         p1.fleet_gen()
-        p2 = AI(difficulty=Difficulty, type_player='Machine_2', point_map_state=(True if Save_Point_Maps else False))
+        p2 = AI(difficulty=Difficulty, type_player='Machine_2', point_map_state=(True if Save_Point_Maps else False), p_number=2)
         p2.fleet_gen()
     elif display__start:
         one = ask_type(1)
         if one:
-            p1 = Player(type_player='Man')
+            p1 = Player(type_player='Man', p_number=1)
         else:
-            p1 = AI(difficulty=Difficulty, type_player='Machine_1', point_map_state=(True if Save_Point_Maps else False))
+            p1 = AI(difficulty=Difficulty, type_player='Machine_1', point_map_state=(True if Save_Point_Maps else False), p_number=1)
             p1.playerType = 'Machine'
         p1.fleet_gen()
         two = ask_type(2)
         if two:
-            p2 = Player(type_player='Man')
+            p2 = Player(type_player='Man', p_number=1)
         else:
-            p2 = AI(difficulty=Difficulty, type_player='Machine_2', point_map_state=(True if Save_Point_Maps else False))
+            p2 = AI(difficulty=Difficulty, type_player='Machine_2', point_map_state=(True if Save_Point_Maps else False), p_number=1)
         p2.fleet_gen()
         input(out_put_data[14])
     while wait_x:
@@ -861,7 +876,8 @@ def _start_game(display=True, override=False, wait_x=1):
 
 
 if __name__ == "__main__":
-    Profile = input(out_put_data[19])
+    # Profile = input(out_put_data[19])
+    Profile = 1
     if Profile:
         Display = False
 
@@ -871,4 +887,5 @@ if __name__ == "__main__":
                 if x % 10 == 0:
                     print(x)
         cProfile.run('run_lot()')
-    _start_game()
+    else:
+        _start_game()

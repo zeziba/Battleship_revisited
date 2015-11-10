@@ -1,38 +1,46 @@
 __author__ = 'Charles Engen'
 
-
-import Battleship_1_0_0
 import multiprocessing
 import datetime
 import cProfile
 import sys
 
+import Battleship_1_0_0
+
+
 max_processes = (multiprocessing.cpu_count() - 1)
-iterations = 3000
+iterations = 100
 
 
 def update_progress(progress):
     print('\r[{0}] {1}%'.format('#'*(progress/10), progress))
 
+
+def save_time_stamp(start, end):
+    with open(Battleship_1_0_0.join_(Battleship_1_0_0.path_gamedata_, "battleship_M_time.txt"), "a+") as file:
+            file.write("%s\n" % (start - end))
+
+
 def worker(x=0):
+    start = Battleship_1_0_0.time.time()
     while True:
         if x % 100 == 0:
             if sys.flags.interactive:
                 update_progress(int(x/iterations * 100))
         Battleship_1_0_0._start_game(override=x, display=False)
-        return
+        return save_time_stamp(start, Battleship_1_0_0.time.time())
 
 
 def main():
     try:
         start = datetime.datetime.now()
 
-        thread_pool = multiprocessing.Pool(max_processes)
+        process_pool = multiprocessing.Pool(max_processes)
 
-        results = thread_pool.map_async(worker, range(iterations))
+        results = process_pool.map_async(worker, range(iterations))
 
-        thread_pool.close()
-        thread_pool.join()
+        process_pool.close()
+        process_pool.join()
 
         print("Job took: %s" % (datetime.datetime.now() - start))
 
@@ -40,8 +48,8 @@ def main():
 
     except KeyboardInterrupt:
         print(KeyboardInterrupt)
-        thread_pool.close()
-        thread_pool.join()
+        process_pool.close()
+        process_pool.join()
 
         input("Waiting for keypress")
 
