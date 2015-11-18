@@ -153,12 +153,12 @@ class MainFrame(tkinter.Tk):
     def cycle_point_map_up(self):
         self.player_1_turn += 2
         self.player_2_turn += 2
-        self._set_point_map(self.player_1_turn)
+        self._set_point_map(self.player_2_turn if self.player_number == 1 else self.player_1_turn)
 
     def cycle_point_map_down(self):
         self.player_1_turn -= 2
         self.player_2_turn -= 2
-        self._set_point_map(self.player_1_turn)
+        self._set_point_map(self.player_2_turn if self.player_number == 1 else self.player_1_turn)
 
     def load_player_1(self):
         self.player_number = 1
