@@ -57,7 +57,8 @@ out_put_data = {
     22: "'%s is %s tiles long.'",
     23: "Horizontal or Vertical?",
     24: "A random entry has been done.",
-    25: "{'Player': '%s', 'Shots': %s, 'Hits': %s, 'Accuracy': %s, 'Win ON': %s, 'Difficulty': %s}\n"
+    25: "{'Player': '%s', 'Shots': %s, 'Hits': %s, 'Accuracy': %s, 'Win ON': %s, 'Difficulty': %s}\n",
+    26: "Would you like to save the game's point maps and game stats? Enter 1 for yes."
 }
 
 
@@ -843,9 +844,9 @@ def _start_game(display=True, override=False, wait_x=1):
         p1.fleet_gen()
         two = ask_type(2)
         if two:
-            p2 = Player(type_player='Man', p_number=1)
+            p2 = Player(type_player='Man', p_number=2)
         else:
-            p2 = AI(difficulty=Difficulty, type_player='Machine_2', point_map_state=(True if Save_Point_Maps else False), p_number=1)
+            p2 = AI(difficulty=Difficulty, type_player='Machine_2', point_map_state=(True if Save_Point_Maps else False), p_number=2)
         p2.fleet_gen()
         input(out_put_data[14])
     while wait_x:
@@ -878,9 +879,13 @@ def _start_game(display=True, override=False, wait_x=1):
 
 
 if __name__ == "__main__":
-    # Profile = input(out_put_data[19])
-    Profile = 1
-    if Profile:
+    Profile = input(out_put_data[19])
+    Save = input(out_put_data[26])
+    # Profile = 1
+    if Save == 1:
+        Save_Stats = False
+        Save_Point_Maps = False
+    if Profile == 1:
         Display = False
 
         def run_lot():
