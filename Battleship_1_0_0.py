@@ -803,10 +803,12 @@ class AI(Player):
 
     def _save_ai_point_board(self):
         try:
-            with open(join_(path_gamedata_pointmaps_, "%s_%s_%s.txt" % (self.p_number, _game_number, id(self.playerType))), "a+") as file:
+            with open(join_(path_gamedata_pointmaps_, "%s_%s_%s.txt" %
+                    (self.p_number, _game_number, id(self.playerType))), "a+") as file:
                 file.write("{'turn_%s': %s}\n" % (turns, str(self._point_map)))
         except FileNotFoundError:
-            open(join_(path_gamedata_pointmaps_, "%s_%s_%s.txt" % (self.p_number, _game_number, id(self.playerType))), "w+").close()
+            open(join_(path_gamedata_pointmaps_, "%s_%s_%s.txt" %
+                       (self.p_number, _game_number, id(self.playerType))), "w+").close()
             self._save_ai_point_board()
 
 
