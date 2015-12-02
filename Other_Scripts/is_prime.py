@@ -11,6 +11,7 @@ __author__ = 'Charles Engen'
 #
 # cProfile.run("run_program(50000)")
 
+
 def is_prime(get_number, display=False):
 
     prime = True
