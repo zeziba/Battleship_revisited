@@ -49,3 +49,7 @@ class Clock(tkinter.Frame):
 
     def __call__(self, *args, **kwargs):
         self._update()
+
+
+c = Clock(tkinter.Tk())
+c.run()
