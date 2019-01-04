@@ -26,6 +26,14 @@ class testboat:
             return True
         return False
 
+    @property
+    def sunk(self):
+        return False
+
+    @property
+    def hits(self):
+        return []
+
 
 class testboard:
     def __init__(self, tb):
@@ -56,6 +64,10 @@ class testboard:
 size = int(defaultconfig['board size'])
 
 
+class testplayer:
+    pass
+
+
 class TestMethodsBoardManager(unittest.TestCase):
     class MyOut(object):
         def __init__(self):
@@ -73,4 +85,84 @@ class TestMethodsBoardManager(unittest.TestCase):
         def __str__(self):
             return "".join(self.data)
 
-    pass
+    def test_import(self):
+        from src import boardmanager
+
+        b = boardmanager.BoardManager(defaultconfig, testplayer())
+
+        self.assertIs(type(b), boardmanager.BoardManager)
+
+    def test_board(self):
+        __board = {
+            "display": list(),
+            "ships": list(),
+            'point map': list()
+        }
+
+        from src import boardmanager
+        b = boardmanager.BoardManager(defaultconfig, testplayer())
+
+        self.assertEqual(b.board, __board)
+
+    def test_add_boat(self):
+        from src import boardmanager
+
+        b = boardmanager.BoardManager(defaultconfig, testplayer())
+
+        self.assertIsNone(b.add_ship(testboat(test_point)))
+
+    def test_display(self):
+        from src import boardmanager
+
+        b = boardmanager.BoardManager(defaultconfig, testplayer())
+
+        b.add_ship(testboat(defaultconfig))
+
+        b.update_display()
+
+        self.assertEqual(b.display, ['~' * 10 for _ in range(10)])
+
+    def test_point_map(self):
+        from src import boardmanager
+
+        b = boardmanager.BoardManager(defaultconfig, testplayer())
+
+        self.assertEqual(b.point_map, list())
+
+        b.add_ship(testboat(defaultconfig))
+
+        b.update_display()
+        b.update_point_map()
+
+        self.assertEqual(b.point_map, [[1 for _ in range(10)] for _ in range(10)])
+
+    def test_size(self):
+        from src import boardmanager
+        b = boardmanager.BoardManager(defaultconfig, testplayer())
+
+        self.assertEqual(b.size, defaultconfig['board size'])
+
+    def test_reset(self):
+        from src import boardmanager
+        b = boardmanager.BoardManager(defaultconfig, testplayer())
+
+        b.add_ship(testboat(test_point))
+
+        b.update_display()
+        b.update_point_map()
+
+        self.assertEqual(b.point_map, [[1 for _ in range(10)] for _ in range(10)])
+
+        b.reset()
+
+        self.assertEqual(b.point_map, list())
+
+    def test_iter(self):
+        from src import boardmanager
+        b = boardmanager.BoardManager(defaultconfig, testplayer())
+
+        b.add_ship(testboat(test_point))
+        b.update_display()
+
+        for row in b:
+            self.assertEqual('~' * b.size, row)
