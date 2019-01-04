@@ -20,9 +20,11 @@ test_point = [1, 1]
 class testboat:
     def __init__(self, tp):
         self.tp = tp
+        self.__hits = []
 
     def hit(self, x, y):
         if x == self.tp[0] and y == self.tp[1]:
+            self.__hits.append([x, y])
             return True
         return False
 
@@ -32,7 +34,10 @@ class testboat:
 
     @property
     def hits(self):
-        return []
+        return self.__hits
+
+    def update_hits(self):
+        self.hit(test_point[0], test_point[1])
 
 
 class testboard:
@@ -116,11 +121,23 @@ class TestMethodsBoardManager(unittest.TestCase):
 
         b = boardmanager.BoardManager(defaultconfig, testplayer())
 
-        b.add_ship(testboat(defaultconfig))
+        b.add_ship(testboat(test_point))
 
         b.update_display()
 
-        self.assertEqual(b.display, ['~' * 10 for _ in range(10)])
+        tmap = ['~' * 10 for _ in range(10)]
+        self.assertEqual(b.display, tmap)
+
+        # Tests the hit markers
+        b.board['ships'][0].update_hits()
+
+        b.update_display()
+
+        t = list(tmap[test_point[0]])
+        t[test_point[1]] = 'X'
+        tmap[test_point[0]] = "".join(t)
+
+        self.assertEqual(tmap, b.display)
 
     def test_point_map(self):
         from src import boardmanager
@@ -134,7 +151,9 @@ class TestMethodsBoardManager(unittest.TestCase):
         b.update_display()
         b.update_point_map()
 
-        self.assertEqual(b.point_map, [[1 for _ in range(10)] for _ in range(10)])
+        tmap = [[1 for _ in range(10)] for _ in range(10)]
+
+        self.assertEqual(b.point_map, tmap)
 
     def test_size(self):
         from src import boardmanager
