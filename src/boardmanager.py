@@ -55,7 +55,9 @@ class BoardManager():
         for ship in self.board['ships']:
             symbol = "X" if not ship.sunk else ship.symbol if ship.sunk else WATERSYMBOL
             for hit in ship.hits:
-                self.__board['display'][hit[0]][hit[1]] = symbol
+                t = list(self.__board['display'][hit[0]])
+                t[1] = symbol
+                self.__board['display'][hit[0]] = "".join(t)
 
     def update_point_map(self):
         self.update_display()
