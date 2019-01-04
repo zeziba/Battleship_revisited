@@ -21,9 +21,9 @@ class UXHandle:
         return self.config[option]
 
     @staticmethod
-    def print_board(board):
-        if not isinstance(board, boardmanager.BoardManager):
+    def print_board(board, override=False):
+        if not isinstance(board, boardmanager.BoardManager) and not override:
             raise TypeError()
 
         for row in board:
-            print(os.path.join("{}" * int(board.config["board size"])).format(*row))
+            print("".join("{:<2}" * int(board.size)).format(*row), sep="", end="\n")
