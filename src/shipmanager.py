@@ -5,7 +5,7 @@ class ShipManager():
         self.config = config
         self.__symbol = symbol
         self.__name = name
-        self._length = self.config[name]
+        self._length = int(self.config[name])
 
         self.__hits = list()
         self.__positions = list()
@@ -37,7 +37,7 @@ class ShipManager():
     def create_ship(self, _dir, x0, y0):
         if not self.position:
             for i in range(self.length):
-                self.__positions.append([x0 + 1 * _dir[0], y0 + 1 * _dir[1]])
+                self.__positions.append([x0 + i * _dir[0], y0 + i * _dir[1]])
             return True
         else:
             return False
@@ -51,6 +51,6 @@ class ShipManager():
         return True
 
     def sunk(self):
-        if set(set(self.position) - set(self.hits)):
+        if set(set([tuple(x) for x in self.position]) - set([tuple(y) for y in self.hits])):
             return False
         return True
