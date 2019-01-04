@@ -1,8 +1,8 @@
 import shipmanager
 
 DIRS = {
-    'VERTICAL': 0,
-    'HORIZONTAL': 1
+    'VERTICAL': (1, 0),
+    'HORIZONTAL': (0, 1)
 }
 
 
