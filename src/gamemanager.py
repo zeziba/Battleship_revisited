@@ -14,9 +14,10 @@ class GameManager():
     def reset(self):
         self.__state = False
 
-    def check_win(self, board):
-        if not isinstance(board, boardmanager.BoardManager):
-            raise TypeError("Not a board object")
+    def check_win(self, board, override=False):
+        if not override:
+            if not isinstance(board, boardmanager.BoardManager):
+                raise TypeError("Not a board object")
 
         ship_count = int(self.config['ship count'])
         if len(board.board['ships']) > ship_count:
@@ -25,14 +26,14 @@ class GameManager():
         if not self.check_if_valid(board):
             raise Exception("Board is malformed")
 
-        if all(boat.sunk() for boat in board.board['ships']):
+        if all(boat.sunk for boat in board.board['ships']):
             self.__state = True
             return True
         return False
 
     @staticmethod
     def _m(ship1, ship2):
-        if ship1[1] - ship2[1] == 0:
+        if ship1[0] == ship2[0]:
             return float('inf')
         return (ship2[1] - ship1[1]) / (ship2[0] - ship1[0])
 
@@ -44,18 +45,16 @@ class GameManager():
     def _check_ship_is_valid(self, ship):
         m = self._m(ship.positions[0], ship.positions[1])
 
-        if m != float('inf') or m != 0:
-            return False
         x0, y0 = ship.positions[0][0], ship.positions[0][1]
 
         for pos in ship.positions:
             self._check_if_in_bounds(pos)
             n_m = self._m([x0, y0], pos)
-            if m != n_m or n_m != float('inf') or n_m != 0:
+            if m != n_m or n_m != float('inf') or n_m == 0:
                 return False
-            if pos[0] - x0 < ship.shipLength or pos[1] - y0 < ship.shipLength:
+            if pos[0] - x0 > ship.length or pos[1] - y0 > ship.length:
                 return False
-        if len(set(ship.positions)) != ship.shipLength:
+        if len(set([tuple(pos) for pos in ship.positions])) != ship.length:
             return False
         return True
 
@@ -63,15 +62,15 @@ class GameManager():
         # Check if the board is valid, display board is not checked.
         # Does this by checking if the correct number of ships is present then checks the position of each.
         # Checks if a player has won the game and returns a value based on that information
-        ships_available = {i[0]: int(i[0]) for i in self.config['ships'].split(',')}
-        ship_data = {ship: 0 for ship in board.board['ships'].name}
+        ships_available = {i.split(":")[0].lower().replace('"', ""): int(i.split(":")[1]) for i in self.config['ships'].split(',')}
+        ship_data = {ship.name: 0 for ship in board.ships}
 
         # Check if ships are inside the board along with number of each type
-        for ship in board.board['ships']:
+        for ship in board.ships:
             ship_data[ship.name] += 1
 
-        for ship in ship_data.keys():
-            if int(ship_data[ship]) != int(ships_available[ship]):
+        for ship in board.ships:
+            if int(ship_data[ship.name]) != int(ships_available[ship.name]):
                 return False
 
             if not self._check_ship_is_valid(ship):
