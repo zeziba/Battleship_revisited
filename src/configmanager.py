@@ -36,10 +36,14 @@ class ConfigManager():
 
     def open(self):
         try:
+            import os
+            if not os.path.exists(self.configfile):
+                raise FileNotFoundError()
             self.config.read(self.configfile)
+            return True
         except FileNotFoundError:
-            self.create()
-            self.open()
+            print("File not found, creation of file is required!")
+        return False
 
     def get_config(self, selection=None):
         rn_dict = dict()
