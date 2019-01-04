@@ -51,7 +51,7 @@ class BoardManager():
         }
 
     def update_display(self):
-        self.__board['display'] = [[WATERSYMBOL * self.config['board size']] for _ in range(self.config['board size'])]
+        self.__board['display'] = [WATERSYMBOL * self.config['board size'] for _ in range(self.config['board size'])]
         for ship in self.board['ships']:
             symbol = "X" if not ship.sunk else ship.symbol if ship.sunk else WATERSYMBOL
             for hit in ship.hits:
