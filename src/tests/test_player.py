@@ -15,16 +15,32 @@ defaultconfig = {
 }
 
 test_point = [1, 1]
+WATERSYMBOL = '~'
+size = int(defaultconfig['board size'])
 
 
 class testboat:
     def __init__(self, tp):
         self.tp = tp
+        self.__hits = []
 
     def hit(self, x, y):
         if x == self.tp[0] and y == self.tp[1]:
+            self.__hits.append([x, y])
             return True
         return False
+
+    @property
+    def sunk(self):
+        return False
+
+    @property
+    def hits(self):
+        return self.__hits
+
+    @property
+    def symbol(self):
+        return "B"
 
 
 class testboard:
@@ -35,6 +51,7 @@ class testboard:
             'point map': [[0 for _ in range(10)] for _ in range(10)]
         }
         self.__board['ships'].append(tb)
+        self.config = defaultconfig
 
     @property
     def board(self):
@@ -52,8 +69,29 @@ class testboard:
     def point_map(self):
         return self.__board['point map']
 
+    @property
+    def display(self):
+        return self.board['display']
 
-size = int(defaultconfig['board size'])
+    @property
+    def size(self):
+        return size
+
+    def update_display(self):
+        self.__board['display'] = [WATERSYMBOL * self.config['board size'] for _ in range(self.config['board size'])]
+        for ship in self.board['ships']:
+            symbol = "X" if not ship.sunk else ship.symbol if ship.sunk else WATERSYMBOL
+            for hit in ship.hits:
+                t = list(self.__board['display'][hit[0]])
+                t[1] = symbol
+                self.__board['display'][hit[0]] = "".join(t)
+
+    def update_point_map(self):
+        self.update_display()
+        self.__board['point map'] = list()
+        for row in self.board['display']:
+            self.__board['point map'].append([0 if x is not WATERSYMBOL else 1 for x in row])
+            # TODO: Add ships that are sunk to the board
 
 
 class TestMethodsPlayer(unittest.TestCase):
@@ -104,6 +142,10 @@ class TestMethodsPlayer(unittest.TestCase):
             self.assertEqual(correct_out if (pos % size) == test_point[0] and (pos // size) == test_point[1]
                              else false_out, str(out))
 
+    def test_place_boats(self):
+        # TODO: Have to finalize how ships are placed in ship manager before this test can be conducted.
+        pass
+
     def test_AI(self):
         from src import player
 
@@ -125,3 +167,11 @@ class TestMethodsPlayer(unittest.TestCase):
             print(ai._get_adjacent_cells((pos % size), (pos // size), b))
             sys.stdout = std_out
             self.assertEqual(correct_out, str(out))
+
+    def test_AI_fire_shot(self):
+        from src import player
+
+        b = testboard(testboat(test_point))
+        ai = player.AI(b, defaultconfig, "easy")
+
+        self.assertTrue(len(ai.fire_shot(board=b)) == 2)
