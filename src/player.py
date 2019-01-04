@@ -39,7 +39,7 @@ class AI(Player):
         opp.update_point_map()
         # Need to generate a list of possible solutions to the above board based on the difficulty of the situation
         if self.__difficulty == 'easy':
-            self.__easy_ai__(opp)
+            return self.__easy_ai__(opp)
         elif self.__difficulty == 'medium':
             pass
         elif self.__difficulty == 'hard':
@@ -57,17 +57,19 @@ class AI(Player):
         board.update_display()
         # Get the point map by adding the adjacent squares values together, this should return a min of 1 if
         #   the map has a water spot under the square and ALWAYS 0 if there is a hit at that location
-        point_map = [self._get_adjacent_cells(x, y, board.display) for x, y in zip(range(board.size), range(board.size))]
+        point_map = [self._get_adjacent_cells(x, y, board) for x in range(board.size) for y in range(board.size)]
         # Simple conversion: (x, y) -> x = num % board.size, y = num / size
         max = 0
         _max = -1
-        for pos in range(len(point_map)):
-            if point_map[pos] > max:
-                _max = pos
-            if board.display[pos % board.size][pos // board.size] == 0:
+        for index, pos in enumerate(point_map):
+            if point_map[index] > _max:
+                _max = index
+                max = pos
+            if board.point_map[pos % board.size][pos // board.size] == 0:
                 point_map[pos % board.size][pos // board.size] = 0
         import random
-        canidates = [pos for pos in range(len(point_map)) if point_map[pos] == max]
-        return random.choice(canidates)
+        possible_moves = [(index % board.size, index // board.size) for index, pos in enumerate(point_map)
+                          if point_map[index] == max]
+        return random.choice(possible_moves)
 
 
