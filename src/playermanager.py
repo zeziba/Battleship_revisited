@@ -5,32 +5,60 @@ DIRS = {
     'HORIZONTAL': (0, 1)
 }
 
+DIFFICULTY = {
+    0: "easy",
+    1: "medium",
+    3: "hard"
+}
+
 
 class Player:
-    def __init__(self, _type, board, config):
+    def __init__(self, _type, board, config, name="Player"):
         self.__type = _type
         self.__board = board
         self.__config = config
         self.__ships = {i.split(":")[0]: int(i.split(":")[1]) for i in self.__config['ships'].split(',')}
+        self.__turn = 0
+        self.name = name
 
-    def place_boats(self, _dir, x, y):
+    def place_boats(self, _dir, boat, x, y):
         if _dir not in DIRS:
             raise Exception("Direction is not a direction")
-        for boat in self.__ships.keys():
-            self.__board[boat] = shipmanager.ShipManager(self.__config, boat, boat[0])
-            self.__board[boat].create_ship(_dir, x, y)
+        if boat not in self.__ships.keys():
+            raise Exception("Direction is not a direction")
+        self.__board[boat] = shipmanager.ShipManager(self.__config, boat, boat[0])
+        self.__board[boat].create_ship(_dir, x, y)
 
     def fire_shot(self, **kwargs):
+        """
+        :param kwargs:
+            :kwargs board: boardmanager.BoardManager
+            :kwargs x: Int x position
+            :kwargs y: Int y position
+        :return: True/False if shot hit
+        """
         # This method will be used by the opponent
+        self.__turn += 1
         for ship in kwargs['board'].ships:
             if ship.hit(kwargs['x'], kwargs['y']):
                 return True
         return False
 
+    @property
+    def ship_names(self):
+        for boat in self.__ships.keys():
+            yield boat
+
+    @property
+    def turn(self):
+        return self.__turn
+
 
 class AI(Player):
     def __init__(self, board, config, difficulty):
         super().__init__('computer', board, config)
+        import datetime
+        self.name = "AI: {}".format(hash(datetime.datetime.now()))
 
         self.__difficulty = difficulty
 
