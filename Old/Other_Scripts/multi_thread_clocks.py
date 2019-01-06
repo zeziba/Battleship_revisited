@@ -1,4 +1,4 @@
-from Other_Scripts.clock import *
+from Old.Other_Scripts.clock import *
 
 
 class Client(threading.Thread):

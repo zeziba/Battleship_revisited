@@ -5,8 +5,7 @@ import datetime
 import cProfile
 import sys
 
-import Battleship_1_0_0
-
+from Old import Battleship_1_0_0
 
 max_processes = (multiprocessing.cpu_count() - 1)
 iterations = 100
