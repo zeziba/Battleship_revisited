@@ -39,10 +39,15 @@ class ShipManager():
             for i in range(self.length):
                 self.__positions.append([x0 + i * _dir[0], y0 + i * _dir[1]])
             return True
+        return False
+
+    def hit(self, x, y, check=False):
+        if check:
+            if [x, y] in self.position:
+                return True
         else:
             return False
 
-    def hit(self, x, y):
         if [x, y] not in self.position:
             return False
         elif [x, y] in self.hits:

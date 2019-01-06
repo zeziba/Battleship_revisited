@@ -119,16 +119,16 @@ class TestMethodsPlayer(unittest.TestCase):
         out = self.MyOut()
         try:
             sys.stdout = out
-            from src import player
+            from src import playermanager
         finally:
             sys.stdout = std_out
 
         self.assertEqual(correct_out, str(out))
 
     def test_player(self):
-        from src import player
+        from src import playermanager
 
-        p = player.Player(None, None, defaultconfig)
+        p = playermanager.Player(None, None, defaultconfig)
 
         correct_out = "True\n"
         false_out = "False\n"
@@ -147,16 +147,16 @@ class TestMethodsPlayer(unittest.TestCase):
         pass
 
     def test_AI(self):
-        from src import player
+        from src import playermanager
 
         b = testboard(testboat(test_point))
-        ai = player.AI(b, defaultconfig, "easy")
+        ai = playermanager.AI(b, defaultconfig, "easy")
 
     def test_AI_adjacent_cells(self):
-        from src import player
+        from src import playermanager
 
         b = testboard(testboat(test_point))
-        ai = player.AI(b, defaultconfig, "easy")
+        ai = playermanager.AI(b, defaultconfig, "easy")
 
         correct_out = "0\n"
 
@@ -169,9 +169,9 @@ class TestMethodsPlayer(unittest.TestCase):
             self.assertEqual(correct_out, str(out))
 
     def test_AI_fire_shot(self):
-        from src import player
+        from src import playermanager
 
         b = testboard(testboat(test_point))
-        ai = player.AI(b, defaultconfig, "easy")
+        ai = playermanager.AI(b, defaultconfig, "easy")
 
         self.assertTrue(len(ai.fire_shot(board=b)) == 2)

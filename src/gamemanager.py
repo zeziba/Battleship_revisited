@@ -1,4 +1,8 @@
+import random
+
 import boardmanager
+import playermanager
+import shipmanager
 
 
 class GameManager():
@@ -38,23 +42,23 @@ class GameManager():
         return (ship2[1] - ship1[1]) / (ship2[0] - ship1[0])
 
     def _check_if_in_bounds(self, ship):
-        if ship[0] < 0 or ship[1] < 0 or ship[0] > self.config['board size'] or ship[1]:
+        if ship[0] < 0 or ship[1] < 0 or ship[0] > int(self.config['board size']) or ship[1]:
             return False
         return True
 
     def _check_ship_is_valid(self, ship):
-        m = self._m(ship.positions[0], ship.positions[1])
+        m = self._m(ship.position[0], ship.position[1])
 
-        x0, y0 = ship.positions[0][0], ship.positions[0][1]
+        x0, y0 = ship.position[0][0], ship.position[0][1]
 
-        for pos in ship.positions:
+        for pos in ship.position:
             self._check_if_in_bounds(pos)
             n_m = self._m([x0, y0], pos)
             if m != n_m or n_m != float('inf') or n_m == 0:
                 return False
             if pos[0] - x0 > ship.length or pos[1] - y0 > ship.length:
                 return False
-        if len(set([tuple(pos) for pos in ship.positions])) != ship.length:
+        if len(set([tuple(pos) for pos in ship.position])) != ship.length:
             return False
         return True
 
@@ -77,3 +81,80 @@ class GameManager():
                 return False
 
         return True
+
+    def allow_player_place_boats(self, **kwargs):
+        """
+        :param kwargs:
+            :kwargs player: Required, playermanager.Player | playermanager.AI
+            :kwargs board:  Required, boardmanager.Board
+            :kwargs ux:     Required, allows this method to output to screen
+            :kwargs dirs:   Required, playermanager.DIRS
+        :return: True/False of success
+        """
+        player = kwargs['player']
+        ux = kwargs['ux']
+        boats = [ship for ship in player.ship_names]
+        board = kwargs['board']
+        dirs = kwargs['dirs']
+        while boats:
+            boat = boats[-1]
+            # get Dir and (x, y) for boat, NO checking is done right now
+            #   TODO: Check if boat is valid here and make player retry
+            if isinstance(player, playermanager.AI):
+                _dir = random.choice(dirs)
+                x, y = random.randint(0, int(self.config['board size'])), random.randint(0,
+                                                                                         int(self.config['board size']))
+            else:
+                ux.display(ux.out['placement'].format(boat))
+                _dir = dirs[int(ux.get_input(ux.out["get dir"]))]
+                _out = ux.out["get num"].format(1, self.config['board size'])
+                x, y = int(ux.get_input(_out)), int(ux.get_input(_out))
+            if any(b.hit(x, y, True) for b in board.ships) or \
+                    any([x < 0, x > int(self.config['board size']), y < 0, y > int(self.config['board size'])]):
+                ux.display(ux.out["failed input"])
+                continue
+            s = shipmanager.ShipManager(self.config, boat, boat[0])
+            s.create_ship(_dir=_dir, x0=x, y0=y)
+            board.add_ship(s)
+            boats.pop(-1)
+
+    def game(self, **kwargs):
+        """
+        :param kwargs:
+            :kwargs player1: playermanager.Player | playermanger.AI
+            :kwargs player2: playermanager.AI
+            :kwargs player1_board: boardmanager.BoardManager
+            :kwargs player2_board: boardmanager.BoardManager
+            :kwargs ux: uxhandler.UXHandler
+        :return: None
+        """
+        ux = kwargs["ux"]
+
+        p1 = kwargs["player1"]
+        p2 = kwargs["player2"]
+
+        p1_b = kwargs["player1_board"]
+        p2_b = kwargs["player2_board"]
+
+        # Start placing boats.
+        ux.display(ux.out["game start"])
+
+        self.allow_player_place_boats(player=p1, board=p1_b, ux=ux, dirs=list(playermanager.DIRS.values()))
+        self.allow_player_place_boats(player=p2, board=p2_b, ux=ux, dirs=list(playermanager.DIRS.values()))
+
+        while not self.check_win(p1_b) or not self.check_win(p2_b):
+            p, _p = ((p1, p1_b), (p2, p2_b)) if p1.turn < p2.turn else ((p2, p2_b), (p1, p1_b))
+            ux.display(ux.out["turn"].format(p[0].name))
+
+            x, y = (ux.get_input(), ux.get_input()) if isinstance(p[0], playermanager.Player) \
+                else (random.randint(0, self.config['board size']), random.randint(0, self.config['board size']))
+            if 0 > x > self.config['board size'] and 0 > y > self.config['board size']:
+                continue
+            try:
+                if p[0].fire_shot(board=p[1], x=int(x), y=int(y)):
+                    ux.display(ux.out["attack success"].format(x, y))
+                else:
+                    ux.display(ux.out["attack failed"].format(x, y))
+            except Exception:
+                ux.display(ux.out["attack repeat"].format(x, y))
+        ux.display(ux.out["win"] if self.check_win(p1_b) else ux.out["loss"])
