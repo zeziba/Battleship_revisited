@@ -1,4 +1,5 @@
 import os
+
 import boardmanager
 
 FILENAME = "output.txt"
@@ -19,6 +20,12 @@ class UXHandle:
 
     def get(self, option):
         return self.config[option]
+
+    def get_input(self, out='get input num'):
+        return str(input(out if out != 'get input name' else self.out[out]))
+
+    def display(self, data):
+        print(data)
 
     @staticmethod
     def print_board(board, override=False):
