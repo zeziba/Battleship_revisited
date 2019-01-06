@@ -1,7 +1,7 @@
 import configparser
 import os
 
-BASELOCAION = ""
+BASELOCAION = os.path.dirname(__file__)
 CONFIGFILE = "config.ini"
 
 defaultconfig = {
@@ -21,9 +21,9 @@ defaultconfig = {
 
 
 class ConfigManager():
-    def __init__(self):
+    def __init__(self, base=BASELOCAION):
         self.config = configparser.ConfigParser()
-        self.configfile = os.path.join(BASELOCAION if not BASELOCAION else os.getcwd(), CONFIGFILE)
+        self.configfile = os.path.join(base if base else os.getcwd(), CONFIGFILE)
 
     def create(self):
         with open(self.configfile, "w+") as file:
