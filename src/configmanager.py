@@ -10,7 +10,7 @@ defaultconfig = {
         "config file": CONFIGFILE,
         "board size": 10,
         "ship count": 5,
-        "ships": '''"Battleship":1,"Carrier":1,"Patrol Boat":1,"Submarine":1,"Destroyer":1''',
+        "ships": '''battleship:1,carrier:1,patrol boat:1,submarine:1,destroyer:1''',
         'Battleship': 4,
         'Carrier': 5,
         'Patrol Boat': 2,
