@@ -174,4 +174,4 @@ class TestMethodsPlayer(unittest.TestCase):
         b = testboard(testboat(test_point))
         ai = playermanager.AI(b, defaultconfig, "easy")
 
-        self.assertTrue(len(ai.fire_shot(board=b)) == 2)
+        self.assertIsInstance(ai.fire_shot(board=b), bool)

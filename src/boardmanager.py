@@ -51,13 +51,15 @@ class BoardManager():
         }
 
     def update_display(self):
-        self.__board['display'] = [WATERSYMBOL * self.config['board size'] for _ in range(self.config['board size'])]
+        self.__board['display'] = [[WATERSYMBOL for _ in range(self.size)] for _ in range(self.size)]
+        for x, y in self.player.fired:
+            self.__board['display'][x][y] = '*'
         for ship in self.board['ships']:
-            symbol = "X" if not ship.sunk else ship.symbol if ship.sunk else WATERSYMBOL
-            for hit in ship.hits:
-                t = list(self.__board['display'][hit[0]])
-                t[1] = symbol
-                self.__board['display'][hit[0]] = "".join(t)
+            symbol = "X" if not ship.sunk() else ship.symbol if ship.sunk else WATERSYMBOL
+            for x, y in ship.hits:
+                self.__board['display'][x][y] = symbol
+
+        self.__board['display'] = ["".join(row) for row in self.display]
 
     def update_point_map(self):
         self.update_display()

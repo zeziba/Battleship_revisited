@@ -6,9 +6,9 @@ get name:What is your name
 get input num:Select a number between {} and {}
 get dir:Enter in 0: Vertical, 1: Horizontal
 failed input:You failed to make a valid entry
-attack success:You hit {} at [{}, {}]
-attack failed:You failed to hit anything at [{}, {]]
-attack sunk:You sunk {}
+attack success:You hit something at [{}, {}]
+attack failed:You failed to hit anything at [{}, {}]
+attack sunk:You hit {} at [{}, {}] sinking it.
 attack repeat:You already fired at [{}, {}]
 placement:Current ship being placed is {}
-turn:Now it's Player {} turn.
+turn:Now it's Player {}'s turn, Turn {}
