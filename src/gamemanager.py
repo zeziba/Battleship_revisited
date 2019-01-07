@@ -8,6 +8,7 @@ import shipmanager
 class GameManager():
     def __init__(self, config):
         self.config = config
+        self.__size = int(self.config['board size'])
 
         self.__state = False
 
@@ -30,7 +31,7 @@ class GameManager():
         if not self.check_if_valid(board):
             raise Exception("Board is malformed")
 
-        if all(boat.sunk for boat in board.board['ships']):
+        if all(boat.sunk() for boat in board.ships):
             self.__state = True
             return True
         return False
@@ -52,9 +53,11 @@ class GameManager():
         x0, y0 = ship.position[0][0], ship.position[0][1]
 
         for pos in ship.position:
+            if pos == ship.position[0]:
+                continue
             self._check_if_in_bounds(pos)
-            n_m = self._m([x0, y0], pos)
-            if m != n_m or n_m != float('inf') or n_m == 0:
+            n_m = self._m(ship.position[0], pos)
+            if m != n_m and n_m != float('inf') and n_m != 0:
                 return False
             if pos[0] - x0 > ship.length or pos[1] - y0 > ship.length:
                 return False
@@ -109,8 +112,10 @@ class GameManager():
                 _dir = dirs[int(ux.get_input(ux.out["get dir"]))]
                 _out = ux.out["get num"].format(1, self.config['board size'])
                 x, y = int(ux.get_input(_out)), int(ux.get_input(_out))
-            if any(b.hit(x, y, True) for b in board.ships) or \
-                    any([x < 0, x > int(self.config['board size']), y < 0, y > int(self.config['board size'])]):
+            if x + int(self.config[boat]) > self.__size or y + int(self.config[boat]) > self.__size:
+                continue
+            if any(b.special_check(x, y) for b in board.ships) or \
+                    any([x < 0, x > int(self.__size), y < 0, y > int(self.__size)]):
                 ux.display(ux.out["failed input"])
                 continue
             s = shipmanager.ShipManager(self.config, boat, boat[0])
@@ -142,19 +147,25 @@ class GameManager():
         self.allow_player_place_boats(player=p1, board=p1_b, ux=ux, dirs=list(playermanager.DIRS.values()))
         self.allow_player_place_boats(player=p2, board=p2_b, ux=ux, dirs=list(playermanager.DIRS.values()))
 
-        while not self.check_win(p1_b) or not self.check_win(p2_b):
+        while not self.check_win(p1_b) and not self.check_win(p2_b):
             p, _p = ((p1, p1_b), (p2, p2_b)) if p1.turn < p2.turn else ((p2, p2_b), (p1, p1_b))
-            ux.display(ux.out["turn"].format(p[0].name))
+            ux.display(ux.out["turn"].format(p[0].name, p[0].turn + 1))
 
-            x, y = (ux.get_input(), ux.get_input()) if isinstance(p[0], playermanager.Player) \
-                else (random.randint(0, self.config['board size']), random.randint(0, self.config['board size']))
-            if 0 > x > self.config['board size'] and 0 > y > self.config['board size']:
+            x, y = (random.randint(0, self.__size), random.randint(0, self.__size)) \
+                if isinstance(p[0], playermanager.AI) else (ux.get_input(), ux.get_input())
+            if 0 > x > self.__size and 0 > y > self.__size:
                 continue
             try:
-                if p[0].fire_shot(board=p[1], x=int(x), y=int(y)):
+                if p[0].fire_shot(board=_p[1], x=int(x), y=int(y)):
                     ux.display(ux.out["attack success"].format(x, y))
                 else:
                     ux.display(ux.out["attack failed"].format(x, y))
-            except Exception:
+            except shipmanager.ShipException:
                 ux.display(ux.out["attack repeat"].format(x, y))
+            except playermanager.PlayerAlreadyShotError:
+                ux.display(ux.out["attack repeat"].format(x, y))
+            p[1].update_display()
+            ux.display("\n".join("{:<2}".format(d) for d in p[1].display))
+            if p[0].turn == 500:
+                break
         ux.display(ux.out["win"] if self.check_win(p1_b) else ux.out["loss"])
