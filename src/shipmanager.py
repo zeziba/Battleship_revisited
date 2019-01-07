@@ -1,3 +1,5 @@
+class ShipException(Exception):
+    pass
 
 
 class ShipManager():
@@ -41,21 +43,24 @@ class ShipManager():
             return True
         return False
 
-    def hit(self, x, y, check=False):
-        if check:
-            if [x, y] in self.position:
-                return True
-        else:
-            return False
-
+    def hit(self, x, y):
         if [x, y] not in self.position:
             return False
         elif [x, y] in self.hits:
-            raise Exception("Already Fired Here")
+            raise ShipException("Already Fired Here")
         self.__hits.append([x, y])
         return True
+
+    def special_check(self, x, y):
+        if [x, y] in self.position:
+            return True
+        else:
+            return False
 
     def sunk(self):
         if set(set([tuple(x) for x in self.position]) - set([tuple(y) for y in self.hits])):
             return False
         return True
+
+    def __str__(self):
+        return str((self.name, self.position))
