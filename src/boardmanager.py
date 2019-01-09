@@ -40,6 +40,10 @@ class BoardManager():
     def size(self):
         return int(self.config['board size'])
 
+    @property
+    def hits(self):
+        return [pos for pos in [ship.hits for ship in self.ships if not ship.sunk()]]
+
     def add_ship(self, ship: type(shipmanager.ShipManager)):
         self.__board['ships'].append(ship)
 
