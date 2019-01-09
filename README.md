@@ -8,3 +8,7 @@ As of January 9, 2019 this program is in a working condition. Below are some thi
 2. Update output to read better
 3. Create an installer for pip
 4. Integrate automated unittest and integration
+5. Add additional AI algorithms for increased difficulties
+
+
+The current form of the program basically uses a greedy algorithm to decide where to fire a shot. This has the benefit of winning a game in roughly 60-80 moves which gives a human player many opportunities to win.
