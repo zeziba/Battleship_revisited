@@ -50,6 +50,8 @@ class Player:
         self.__turn += 1
         for ship in kwargs['board'].ships:
             if ship.hit(kwargs['x'], kwargs['y']):
+                if ship.sunk():
+                    raise shipmanager.ShipSunkError(f"{ship}")
                 return True
         return False
 
@@ -70,17 +72,13 @@ class AI(Player):
         self.name = "AI: {}".format(hash(datetime.datetime.now()))
 
         self.__difficulty = difficulty
-        self.__moves = []
 
     def fire_shot(self, **kwargs):
         opp = kwargs['board']
         opp.update_point_map()
         # Need to generate a list of possible solutions to the above board based on the difficulty of the situation
         if self.__difficulty == 'easy':
-            if not self.__moves:
-                self.__moves = [(x, y) for x in range(opp.size) for y in range(opp.size)]
             x, y = self.__easy_ai__(opp)
-            self.__moves.pop(self.__moves.index((x, y)))
             return super().fire_shot(board=opp, x=x, y=y)
         elif self.__difficulty == 'medium':
             pass
@@ -88,7 +86,9 @@ class AI(Player):
             pass
 
     @staticmethod
-    def _get_adjacent_cells(x, y, board):
+    def _get_adjacent_cells(x, y, board, player):
+        if (x, y) in player.fired:
+            return -1
         left    = board.point_map[x - 1][y] if x - 1 > 0 else 0
         top     = board.point_map[x][y - 1] if y - 1 > 0 else 0
         bottom  = board.point_map[x][y + 1] if y + 1 < board.size else 0
@@ -99,21 +99,22 @@ class AI(Player):
         board.update_display()
         # Get the point map by adding the adjacent squares values together, this should return a min of 1 if
         #   the map has a water spot under the square and ALWAYS 0 if there is a hit at that location
-        point_map = [0 if (x, y) in self.fired else self._get_adjacent_cells(x, y, board)
-                     for x in range(board.size) for y in range(board.size)]
+        point_map = [self._get_adjacent_cells(x, y, board, self) for x in range(board.size) for y in range(board.size)]
+
         # Simple conversion: (x, y) -> x = num % board.size, y = num / size
         max = 0
         _max = -1
+
         for index, pos in enumerate(point_map):
-            if point_map[index] > _max:
+            if pos > max:
                 _max = index
                 max = pos
-            if board.point_map[pos % board.size][pos // board.size] == 0:
-                point_map[pos % board.size][pos // board.size] = 0
+            if pos > 0 and (index // board.size, index % board.size) in self.fired:
+                raise Exception("F")
+
+        possible_moves = [(index // board.size, index % board.size) for index, _p in enumerate(point_map) if _p == max]
 
         import random
-        possible_moves = [(index % board.size, index // board.size) for index, pos in enumerate(point_map)
-                          if pos == max and (index % board.size, index // board.size) in self.__moves]
         return random.choice(possible_moves)
 
 
