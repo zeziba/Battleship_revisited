@@ -89,11 +89,12 @@ class AI(Player):
     def _get_adjacent_cells(x, y, board, player):
         if (x, y) in player.fired:
             return -1
-        nhb = 5  # Near Hit Bonus
-        left = (board.point_map[x - 1][y] + nhb if (x - 1, y) in board.hits else 0) if x - 1 > 0 else 0
-        top = (board.point_map[x][y - 1] + nhb if (x, y - 1) in board.hits else 0) if y - 1 > 0 else 0
-        bottom = (board.point_map[x][y + 1] + nhb if (x, y + 1) in board.hits else 0) if y + 1 < board.size else 0
-        right = (board.point_map[x + 1][y] + nhb if (x + 1, y) in board.hits else 0) if x + 1 < board.size else 0
+        nhb = 2  # Near Hit Bonus
+        hits = board.hits
+        left = (board.point_map[x - 1][y] + nhb if (x - 1, y) in hits else 0) if x - 1 > 0 else 0
+        top = (board.point_map[x][y - 1] + nhb if (x, y - 1) in hits else 0) if y - 1 > 0 else 0
+        bottom = (board.point_map[x][y + 1] + nhb if (x, y + 1) in hits else 0) if y + 1 < board.size else 0
+        right = (board.point_map[x + 1][y] + nhb if (x + 1, y) in hits else 0) if x + 1 < board.size else 0
         return left + right + top + bottom
 
     def __easy_ai__(self, board):
@@ -101,6 +102,10 @@ class AI(Player):
         # Get the point map by adding the adjacent squares values together, this should return a min of 1 if
         #   the map has a water spot under the square and ALWAYS 0 if there is a hit at that location
         point_map = [self._get_adjacent_cells(x, y, board, self) for x in range(board.size) for y in range(board.size)]
+        for _p in range(board.size ** 2):
+            if _p % 2 == 1:
+                if point_map[_p] >= 0:
+                    point_map[_p] += 2
 
         # Simple conversion: (x, y) -> x = num % board.size, y = num / size
         max = 0
