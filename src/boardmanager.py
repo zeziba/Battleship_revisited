@@ -12,7 +12,7 @@ class BoardManager():
         self.__board = {
             "display": list(),
             "ships": list(),
-            'point map': list()
+            'point map': dict()
         }
 
     @property
@@ -22,6 +22,11 @@ class BoardManager():
     @property
     def point_map(self):
         return self.board['point map']
+
+    @property
+    def point_map_iter(self):
+        for key in self.point_map.keys():
+            yield self.point_map[key]
 
     @property
     def ships(self):
@@ -38,6 +43,23 @@ class BoardManager():
     def add_ship(self, ship: type(shipmanager.ShipManager)):
         self.__board['ships'].append(ship)
 
+    def validate_board(self):
+        """
+        Method looks to ensure that no ship overlaps.
+        :return: True/False is ships overlap
+        """
+        if not self.ships:
+            return True
+        total = sum(ship.length for ship in self.ships)
+        positions = []
+        for ship in self.ships:
+            for pos in ship.position:
+                if pos not in positions:
+                    positions.append(pos)
+        if total != len(positions):
+            return False
+        return True
+
     def __iter__(self):
         # The below should output the display board
         for row in self.board["display"]:
@@ -47,7 +69,7 @@ class BoardManager():
         self.__board = {
             "display": list(),
             "ships": list(),
-            'point map': list()
+            'point map': dict()
         }
 
     def update_display(self):
@@ -63,7 +85,8 @@ class BoardManager():
 
     def update_point_map(self):
         self.update_display()
-        self.__board['point map'] = list()
-        for row in self.board['display']:
-            self.__board['point map'].append([0 if x is not WATERSYMBOL else 1 for x in row])
-            # TODO: Add ships that are sunk to the board
+        self.__board['point map'] = dict()
+        for index, x in enumerate(self.board['display']):
+            self.__board['point map'][index] = dict()
+            for _index, y in enumerate(x):
+                self.__board['point map'][index][_index] = 1 if y is WATERSYMBOL else 0
