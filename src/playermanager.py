@@ -89,10 +89,11 @@ class AI(Player):
     def _get_adjacent_cells(x, y, board, player):
         if (x, y) in player.fired:
             return -1
-        left    = board.point_map[x - 1][y] if x - 1 > 0 else 0
-        top     = board.point_map[x][y - 1] if y - 1 > 0 else 0
-        bottom  = board.point_map[x][y + 1] if y + 1 < board.size else 0
-        right   = board.point_map[x + 1][y] if x + 1 < board.size else 0
+        nhb = 5  # Near Hit Bonus
+        left = (board.point_map[x - 1][y] + nhb if (x - 1, y) in board.hits else 0) if x - 1 > 0 else 0
+        top = (board.point_map[x][y - 1] + nhb if (x, y - 1) in board.hits else 0) if y - 1 > 0 else 0
+        bottom = (board.point_map[x][y + 1] + nhb if (x, y + 1) in board.hits else 0) if y + 1 < board.size else 0
+        right = (board.point_map[x + 1][y] + nhb if (x + 1, y) in board.hits else 0) if x + 1 < board.size else 0
         return left + right + top + bottom
 
     def __easy_ai__(self, board):
