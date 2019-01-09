@@ -9,10 +9,10 @@ class Battleship():
     def __init__(self):
         config = configmanager.ConfigManager()
         try:
-            config.open()
-        except FileNotFoundError:
+            self.config = config.get_config()['settings']
+        except KeyError:
             config.create()
-        self.config = config.get_config()['settings']
+            self.config = config.get_config()['settings']
         self.ux = uxhandler.UXHandle(self.config)
         self.game = gamemanager.GameManager(self.config)
 
