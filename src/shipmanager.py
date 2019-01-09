@@ -2,6 +2,10 @@ class ShipException(Exception):
     pass
 
 
+class ShipSunkError(Exception):
+    pass
+
+
 class ShipManager():
     def __init__(self, config, name, symbol):
         self.config = config

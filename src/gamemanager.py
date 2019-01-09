@@ -145,25 +145,42 @@ class GameManager():
         ux.display(ux.out["game start"])
 
         self.allow_player_place_boats(player=p1, board=p1_b, ux=ux, dirs=list(playermanager.DIRS.values()))
+        while not p1_b.validate_board():
+            p1_b.reset()
+            self.allow_player_place_boats(player=p1, board=p1_b, ux=ux, dirs=list(playermanager.DIRS.values()))
         self.allow_player_place_boats(player=p2, board=p2_b, ux=ux, dirs=list(playermanager.DIRS.values()))
+        while not p2_b.validate_board():
+            p2_b.reset()
+            self.allow_player_place_boats(player=p2, board=p2_b, ux=ux, dirs=list(playermanager.DIRS.values()))
 
         while not self.check_win(p1_b) and not self.check_win(p2_b):
             p, _p = ((p1, p1_b), (p2, p2_b)) if p1.turn < p2.turn else ((p2, p2_b), (p1, p1_b))
             ux.display(ux.out["turn"].format(p[0].name, p[0].turn + 1))
 
-            x, y = (random.randint(0, self.__size), random.randint(0, self.__size)) \
-                if isinstance(p[0], playermanager.AI) else (ux.get_input(), ux.get_input())
-            if 0 > x > self.__size and 0 > y > self.__size:
-                continue
-            try:
-                if p[0].fire_shot(board=_p[1], x=int(x), y=int(y)):
-                    ux.display(ux.out["attack success"].format(x, y))
-                else:
-                    ux.display(ux.out["attack failed"].format(x, y))
-            except shipmanager.ShipException:
-                ux.display(ux.out["attack repeat"].format(x, y))
-            except playermanager.PlayerAlreadyShotError:
-                ux.display(ux.out["attack repeat"].format(x, y))
+            if not isinstance(p[0], playermanager.AI):
+                x, y = ux.get_input(), ux.get_input()
+                if 0 > x > self.__size and 0 > y > self.__size:
+                    continue
+                try:
+                    if p[0].fire_shot(board=_p[1], x=int(x), y=int(y)):
+                        ux.display(ux.out["attack success"].format(x, y))
+                    else:
+                        ux.display(ux.out["attack failed"].format(x, y))
+                except shipmanager.ShipException:
+                    ux.display(ux.out["attack repeat"].format(x, y))
+                except playermanager.PlayerAlreadyShotError:
+                    ux.display(ux.out["attack repeat"].format(x, y))
+                except shipmanager.ShipSunkError as error:
+                    ux.display(ux.out['attack sunk'].format(error.args, x, y))
+            else:
+                try:
+                    if p[0].fire_shot(board=p[1]):
+                        ux.display(ux.out["attack success"].format(p[0].fired[-1][0], p[0].fired[-1][1]))
+                    else:
+                        ux.display(ux.out["attack failed"].format(p[0].fired[-1][0], p[0].fired[-1][1]))
+                except shipmanager.ShipSunkError as error:
+                    ux.display(ux.out['attack sunk'].format(error.args, p[0].fired[-1][0], p[0].fired[-1][1]))
+
             p[1].update_display()
             ux.display("\n".join("{:<2}".format(d) for d in p[1].display))
             if p[0].turn == 500:
