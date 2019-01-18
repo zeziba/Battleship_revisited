@@ -102,16 +102,21 @@ class GameManager():
         while boats:
             boat = boats[-1]
             # get Dir and (x, y) for boat, NO checking is done right now
-            #   TODO: Check if boat is valid here and make player retry
+            # TODO: Check if boat is valid here and make player retry
             if isinstance(player, playermanager.AI):
                 _dir = random.choice(dirs)
                 x, y = random.randint(0, int(self.config['board size'])), random.randint(0,
                                                                                          int(self.config['board size']))
             else:
-                ux.display(ux.out['placement'].format(boat))
-                _dir = dirs[int(ux.get_input(ux.out["get dir"]))]
-                _out = ux.out["get num"].format(1, self.config['board size'])
-                x, y = int(ux.get_input(_out)), int(ux.get_input(_out))
+                # TODO: Add GUI to place boats, would be easier and make more sense here.
+                try:
+                    ux.display(ux.out['placement'].format(boat))
+                    _dir = dirs[int(ux.get_input(ux.out["get dir"]))]
+                    _out = ux.out["get input num"].format(0, int(self.config['board size']) - 1)
+                    x, y = int(ux.get_input(_out)), int(ux.get_input(_out))
+                except ValueError:
+                    ux.display(ux.out['failed input'])
+                    continue
             if x + int(self.config[boat]) > self.__size or y + int(self.config[boat]) > self.__size:
                 continue
             if any(b.special_check(x, y) for b in board.ships) or \
