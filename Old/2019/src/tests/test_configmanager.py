@@ -2,16 +2,16 @@ import sys
 import unittest
 
 defaultconfig = {
-    "base location": '',
+    "base location": "",
     "config file": "config.ini",
     "board size": 10,
     "ship count": 5,
-    "ships": '''"Battleship":1,"Carrier":1,"Patrol Boat":1,"Submarine":1,"Destroyer":1''',
-    'Battleship': 4,
-    'Carrier': 5,
-    'Patrol Boat': 2,
-    'Submarine': 3,
-    'Destroyer': 3
+    "ships": """"Battleship":1,"Carrier":1,"Patrol Boat":1,"Submarine":1,"Destroyer":1""",
+    "Battleship": 4,
+    "Carrier": 5,
+    "Patrol Boat": 2,
+    "Submarine": 3,
+    "Destroyer": 3,
 }
 
 test_point = [1, 1]
@@ -51,8 +51,11 @@ class TestMethodsConfigManager(unittest.TestCase):
         c.create()
 
         import os
-        file = os.path.join(configmanager.defaultconfig['settings']['base location'],
-                            configmanager.defaultconfig['settings']['config file'])
+
+        file = os.path.join(
+            configmanager.defaultconfig["settings"]["base location"],
+            configmanager.defaultconfig["settings"]["config file"],
+        )
         self.assertTrue(os.path.exists(file))
 
         os.remove(file)
@@ -62,8 +65,11 @@ class TestMethodsConfigManager(unittest.TestCase):
     def test_open(self):
         import os
         from src import configmanager
-        file = os.path.join(configmanager.defaultconfig['settings']['base location'],
-                            configmanager.defaultconfig['settings']['config file'])
+
+        file = os.path.join(
+            configmanager.defaultconfig["settings"]["base location"],
+            configmanager.defaultconfig["settings"]["config file"],
+        )
 
         if os.path.exists(file):
             os.remove(file)
@@ -95,8 +101,11 @@ class TestMethodsConfigManager(unittest.TestCase):
     def test_get_config(self):
         import os
         from src import configmanager
-        file = os.path.join(configmanager.defaultconfig['settings']['base location'],
-                            configmanager.defaultconfig['settings']['config file'])
+
+        file = os.path.join(
+            configmanager.defaultconfig["settings"]["base location"],
+            configmanager.defaultconfig["settings"]["config file"],
+        )
 
         if os.path.exists(file):
             os.remove(file)
@@ -115,8 +124,11 @@ class TestMethodsConfigManager(unittest.TestCase):
     def test_str(self):
         import os
         from src import configmanager
-        file = os.path.join(configmanager.defaultconfig['settings']['base location'],
-                            configmanager.defaultconfig['settings']['config file'])
+
+        file = os.path.join(
+            configmanager.defaultconfig["settings"]["base location"],
+            configmanager.defaultconfig["settings"]["config file"],
+        )
 
         if os.path.exists(file):
             os.remove(file)
@@ -136,10 +148,18 @@ class TestMethodsConfigManager(unittest.TestCase):
             sys.stdout = std_out
 
         # Calculate number of ints in default config and then multiply by 2 add 1 for the \n char
-        offset = sum([1 for key in configmanager.defaultconfig['settings'].keys()
-                      if isinstance(configmanager.defaultconfig['settings'][key], int)]) * 2 + 1
+        offset = (
+            sum(
+                [
+                    1
+                    for key in configmanager.defaultconfig["settings"].keys()
+                    if isinstance(configmanager.defaultconfig["settings"][key], int)
+                ]
+            )
+            * 2
+            + 1
+        )
         self.assertEqual(len(str(correct_out)) + offset, len(str(out)))
 
         if os.path.exists(file):
             os.remove(file)
-

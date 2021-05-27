@@ -1,4 +1,4 @@
-__author__ = 'Charles Engen'
+__author__ = "Charles Engen"
 
 import threading
 import time
@@ -7,7 +7,6 @@ from random import randint
 
 
 class Clock(tkinter.Frame):
-
     def __init__(self, parent, interval=1.0, thread_count=1):
         tkinter.Frame.__init__(self, parent)
 
@@ -27,8 +26,12 @@ class Clock(tkinter.Frame):
         self.time_value_var.set(None)
         self.random_var.set(None)
 
-        self.random_label = tkinter.Label(self, textvariable=self.random_var, font=("Helvetica", 16))
-        self.time_label = tkinter.Label(self, textvariable=self.time_value_var, font=("Helvetica", 32))
+        self.random_label = tkinter.Label(
+            self, textvariable=self.random_var, font=("Helvetica", 16)
+        )
+        self.time_label = tkinter.Label(
+            self, textvariable=self.time_value_var, font=("Helvetica", 32)
+        )
 
         self.random_label.pack(side="bottom")
         self.time_label.pack()

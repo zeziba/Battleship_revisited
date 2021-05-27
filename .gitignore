@@ -16,3 +16,4 @@
 
 # Ignore Coverage
 coverage/
+/venv/

@@ -7,17 +7,17 @@ defaultconfig = {
     "config file": "config.ini",
     "board size": 10,
     "ship count": 5,
-    "ships": '''"Battleship":1,"Carrier":1,"Patrol Boat":1,"Submarine":1,"Destroyer":1''',
-    'battleship': 4,
-    'carrier': 5,
-    'patrol boat': 2,
-    'submarine': 3,
-    'destroyer': 3
+    "ships": """"Battleship":1,"Carrier":1,"Patrol Boat":1,"Submarine":1,"Destroyer":1""",
+    "battleship": 4,
+    "carrier": 5,
+    "patrol boat": 2,
+    "submarine": 3,
+    "destroyer": 3,
 }
 
 test_point = [1, 1]
-WATERSYMBOL = '~'
-size = int(defaultconfig['board size'])
+WATERSYMBOL = "~"
+size = int(defaultconfig["board size"])
 
 
 class testboat:
@@ -49,9 +49,9 @@ class testboard:
         self.__board = {
             "display": list(),
             "ships": list(),
-            'point map': [[0 for _ in range(10)] for _ in range(10)]
+            "point map": [[0 for _ in range(10)] for _ in range(10)],
         }
-        self.__board['ships'].append(tb)
+        self.__board["ships"].append(tb)
         self.config = defaultconfig
 
     @property
@@ -60,19 +60,19 @@ class testboard:
 
     @property
     def ships(self):
-        return self.board['ships']
+        return self.board["ships"]
 
     @property
     def size(self):
-        return defaultconfig['board size']
+        return defaultconfig["board size"]
 
     @property
     def point_map(self):
-        return self.__board['point map']
+        return self.__board["point map"]
 
     @property
     def display(self):
-        return self.board['display']
+        return self.board["display"]
 
     @property
     def size(self):
@@ -83,19 +83,24 @@ class testboard:
             yield row
 
     def update_display(self):
-        self.__board['display'] = [WATERSYMBOL * self.config['board size'] for _ in range(self.config['board size'])]
-        for ship in self.board['ships']:
+        self.__board["display"] = [
+            WATERSYMBOL * self.config["board size"]
+            for _ in range(self.config["board size"])
+        ]
+        for ship in self.board["ships"]:
             symbol = "X" if not ship.sunk else ship.symbol if ship.sunk else WATERSYMBOL
             for hit in ship.hits:
-                t = list(self.__board['display'][hit[0]])
+                t = list(self.__board["display"][hit[0]])
                 t[1] = symbol
-                self.__board['display'][hit[0]] = "".join(t)
+                self.__board["display"][hit[0]] = "".join(t)
 
     def update_point_map(self):
         self.update_display()
-        self.__board['point map'] = list()
-        for row in self.board['display']:
-            self.__board['point map'].append([0 if x is not WATERSYMBOL else 1 for x in row])
+        self.__board["point map"] = list()
+        for row in self.board["display"]:
+            self.__board["point map"].append(
+                [0 if x is not WATERSYMBOL else 1 for x in row]
+            )
             # TODO: Add ships that are sunk to the board
 
 
@@ -131,6 +136,7 @@ class TestMethodsUXHandler(unittest.TestCase):
 
     def test_load(self):
         from src import uxhandler
+
         ux = uxhandler.UXHandle(defaultconfig)
 
         ux.load()
@@ -139,6 +145,7 @@ class TestMethodsUXHandler(unittest.TestCase):
 
     def test_get(self):
         from src import uxhandler
+
         ux = uxhandler.UXHandle(defaultconfig)
 
         for key in defaultconfig.keys():
@@ -146,12 +153,16 @@ class TestMethodsUXHandler(unittest.TestCase):
 
     def test_print_board(self):
         from src import uxhandler
+
         ux = uxhandler.UXHandle(defaultconfig)
 
         b = testboard(testboat(test_point))
         b.update_display()
 
-        n = ["{:<2}".format("~") * defaultconfig['board size'] for _ in range(defaultconfig['board size'])]
+        n = [
+            "{:<2}".format("~") * defaultconfig["board size"]
+            for _ in range(defaultconfig["board size"])
+        ]
         n = "\n".join(n) + "\n"
 
         std_out = sys.stdout
@@ -163,4 +174,3 @@ class TestMethodsUXHandler(unittest.TestCase):
             sys.stdout = std_out
 
         self.assertEqual(str(out), n)
-

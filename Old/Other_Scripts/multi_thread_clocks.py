@@ -2,7 +2,6 @@ from Old.Other_Scripts.clock import *
 
 
 class Client(threading.Thread):
-
     def __init__(self, interval=1.0):
         self.thread_count = 0
         self.interval = interval
@@ -13,7 +12,7 @@ class Client(threading.Thread):
 
     def new_clock(self):
         self.thread_count += 1
-        exec("%s = None" % ''.join(('clock', str(time.time())[:10])))
+        exec("%s = None" % "".join(("clock", str(time.time())[:10])))
         aclock = tkinter.Tk()
         clock = Clock(aclock, self.interval, self.thread_count)
         thread = threading.Thread(target=clock)
@@ -31,5 +30,6 @@ class Client(threading.Thread):
         self.button.pack()
 
         self.root.mainloop()
+
 
 a = Client()

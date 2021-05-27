@@ -1,4 +1,4 @@
-__author__ = 'Charles Engen'
+__author__ = "Charles Engen"
 
 import tkinter
 from os.path import join as join_
@@ -14,7 +14,6 @@ point_map = {(x, y): None for x in range(1, 11) for y in range(1, 11)}
 
 
 class PointMaps(object):
-
     def __init__(self):
         self.point_map_files = listdir(_path_gamedata_pointmaps)
         self.load_base_number = 1
@@ -37,7 +36,6 @@ class PointMaps(object):
 
 
 class Table(tkinter.Frame):
-
     def __init__(self, parent):
         global point_map
         tkinter.Frame.__init__(self, parent)
@@ -53,12 +51,11 @@ class Table(tkinter.Frame):
             self._widgets.append(current_row)
 
     def set(self, row, column, value):
-        widget = self._widgets[row-1][column-1]
+        widget = self._widgets[row - 1][column - 1]
         widget.set(value)
 
 
 class MainFrame(tkinter.Tk):
-
     def __init__(self):
         tkinter.Tk.__init__(self)
         self.data = PointMaps()
@@ -84,12 +81,18 @@ class MainFrame(tkinter.Tk):
 
         self.sub_file_item_01.add_separator()
 
-        self.sub_file_item_01.add_command(label="Load Player One", command=self.load_player_1)
-        self.sub_file_item_01.add_command(label="Load Player Two", command=self.load_player_2)
+        self.sub_file_item_01.add_command(
+            label="Load Player One", command=self.load_player_1
+        )
+        self.sub_file_item_01.add_command(
+            label="Load Player Two", command=self.load_player_2
+        )
 
         self.sub_file_item_01.add_separator()
 
-        self.sub_file_item_01.add_command(label="Next map", command=self.cycle_point_map_up)
+        self.sub_file_item_01.add_command(
+            label="Next map", command=self.cycle_point_map_up
+        )
 
         self.level_var = tkinter.StringVar()
         self.player_var = tkinter.StringVar()
@@ -97,22 +100,30 @@ class MainFrame(tkinter.Tk):
         self.level_label = tkinter.Label(self, textvariable=self.level_var)
         self.player_label = tkinter.Label(self, textvariable=self.player_var)
 
-        self.level_label.pack(side='bottom')
-        self.player_label.pack(side='bottom')
+        self.level_label.pack(side="bottom")
+        self.player_label.pack(side="bottom")
 
-        self.button_up = tkinter.Button(text='Point Up', command=self.cycle_point_map_up)
-        self.button_down = tkinter.Button(text='Point Down', command=self.cycle_point_map_down)
+        self.button_up = tkinter.Button(
+            text="Point Up", command=self.cycle_point_map_up
+        )
+        self.button_down = tkinter.Button(
+            text="Point Down", command=self.cycle_point_map_down
+        )
 
         self.button_up.pack()
         self.button_down.pack()
 
         self.game_var = tkinter.StringVar()
 
-        self.game_number_up_button = tkinter.Button(text="Game Up", command=self.game_up)
-        self.game_number_dn_button = tkinter.Button(text="Game Down", command=self.game_down)
+        self.game_number_up_button = tkinter.Button(
+            text="Game Up", command=self.game_up
+        )
+        self.game_number_dn_button = tkinter.Button(
+            text="Game Down", command=self.game_down
+        )
 
-        self.game_number_up_button.pack(side='left')
-        self.game_number_dn_button.pack(side='left')
+        self.game_number_up_button.pack(side="left")
+        self.game_number_dn_button.pack(side="left")
 
         self.point_map = Table(self)
         self.point_map.pack()
@@ -153,12 +164,16 @@ class MainFrame(tkinter.Tk):
     def cycle_point_map_up(self):
         self.player_1_turn += 2
         self.player_2_turn += 2
-        self._set_point_map(self.player_2_turn if self.player_number == 1 else self.player_1_turn)
+        self._set_point_map(
+            self.player_2_turn if self.player_number == 1 else self.player_1_turn
+        )
 
     def cycle_point_map_down(self):
         self.player_1_turn -= 2
         self.player_2_turn -= 2
-        self._set_point_map(self.player_2_turn if self.player_number == 1 else self.player_1_turn)
+        self._set_point_map(
+            self.player_2_turn if self.player_number == 1 else self.player_1_turn
+        )
 
     def load_player_1(self):
         self.player_number = 1
@@ -175,6 +190,7 @@ class MainFrame(tkinter.Tk):
 
     def game_down(self):
         pass
+
 
 if __name__ == "__main__":
     root = MainFrame()

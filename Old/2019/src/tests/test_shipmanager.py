@@ -2,20 +2,20 @@ import sys
 import unittest
 
 defaultconfig = {
-    "base location": '',
+    "base location": "",
     "config file": "config.ini",
     "board size": 10,
     "ship count": 5,
-    "ships": '''"Battleship":1,"Carrier":1,"Patrol Boat":1,"Submarine":1,"Destroyer":1''',
-    'battleship': 4,
-    'carrier': 5,
-    'patrol boat': 2,
-    'submarine': 3,
-    'destroyer': 3
+    "ships": """"Battleship":1,"Carrier":1,"Patrol Boat":1,"Submarine":1,"Destroyer":1""",
+    "battleship": 4,
+    "carrier": 5,
+    "patrol boat": 2,
+    "submarine": 3,
+    "destroyer": 3,
 }
 
 test_point = [1, 1]
-size = int(defaultconfig['board size'])
+size = int(defaultconfig["board size"])
 
 
 class testboat:
@@ -68,9 +68,9 @@ class testboard:
         self.__board = {
             "display": list(),
             "ships": list(),
-            'point map': [[0 for _ in range(10)] for _ in range(10)]
+            "point map": [[0 for _ in range(10)] for _ in range(10)],
         }
-        self.__board['ships'].append(tb)
+        self.__board["ships"].append(tb)
 
     @property
     def board(self):
@@ -78,18 +78,18 @@ class testboard:
 
     @property
     def ships(self):
-        return self.board['ships']
+        return self.board["ships"]
 
     @property
     def size(self):
-        return defaultconfig['board size']
+        return defaultconfig["board size"]
 
     @property
     def point_map(self):
-        return self.__board['point map']
+        return self.__board["point map"]
 
     def add_ship(self, ship):
-        self.__board['ships'].append(ship)
+        self.__board["ships"].append(ship)
 
 
 class TestMethodsShipManager(unittest.TestCase):
@@ -124,6 +124,7 @@ class TestMethodsShipManager(unittest.TestCase):
 
     def test_name(self):
         from src import shipmanager
+
         name = "battleship"
         symbol = "B"
         s = shipmanager.ShipManager(defaultconfig, name, symbol)
@@ -132,6 +133,7 @@ class TestMethodsShipManager(unittest.TestCase):
 
     def test_symbol(self):
         from src import shipmanager
+
         name = "battleship"
         symbol = "B"
         s = shipmanager.ShipManager(defaultconfig, name, symbol)
@@ -141,6 +143,7 @@ class TestMethodsShipManager(unittest.TestCase):
     def test_hits(self):
 
         from src import shipmanager
+
         name = "battleship"
         symbol = "B"
         s = shipmanager.ShipManager(defaultconfig, name, symbol)
@@ -149,6 +152,7 @@ class TestMethodsShipManager(unittest.TestCase):
 
     def test_position(self):
         from src import shipmanager
+
         name = "battleship"
         symbol = "B"
         s = shipmanager.ShipManager(defaultconfig, name, symbol)
@@ -157,6 +161,7 @@ class TestMethodsShipManager(unittest.TestCase):
 
     def test_length(self):
         from src import shipmanager
+
         name = "battleship"
         symbol = "B"
         s = shipmanager.ShipManager(defaultconfig, name, symbol)
@@ -165,6 +170,7 @@ class TestMethodsShipManager(unittest.TestCase):
 
     def test_reset(self):
         from src import shipmanager
+
         name = "battleship"
         symbol = "B"
         s = shipmanager.ShipManager(defaultconfig, name, symbol)
@@ -176,6 +182,7 @@ class TestMethodsShipManager(unittest.TestCase):
 
     def test_create_ship(self):
         from src import shipmanager
+
         name = "battleship"
         symbol = "B"
         s = shipmanager.ShipManager(defaultconfig, name, symbol)
@@ -186,6 +193,7 @@ class TestMethodsShipManager(unittest.TestCase):
 
     def test_hit(self):
         from src import shipmanager
+
         name = "battleship"
         symbol = "B"
         s = shipmanager.ShipManager(defaultconfig, name, symbol)
@@ -200,6 +208,7 @@ class TestMethodsShipManager(unittest.TestCase):
 
     def test_sunk(self):
         from src import shipmanager
+
         name = "battleship"
         symbol = "B"
         s = shipmanager.ShipManager(defaultconfig, name, symbol)

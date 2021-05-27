@@ -1,4 +1,4 @@
-__author__ = 'Charles Engen'
+__author__ = "Charles Engen"
 
 # All the imports that are needed
 from collections import OrderedDict
@@ -19,7 +19,7 @@ responses = {
     3: "Pick a number 1-10",
     4: "You have already fired here at [%s, %s]",
     5: "At [%s, %s] was nothing!",
-    6: 'You have hit the something at [%s, %s]',
+    6: "You have hit the something at [%s, %s]",
     7: "You tried and failed to attack, try again.",
     8: "You sunk %s!",
     9: "You are placing the %s",
@@ -29,7 +29,7 @@ responses = {
     13: "You are a %s!!!",
     14: "Hit a key to continue.",
     15: "Place your shot Player 1",
-    16: "Player %s\'s known Board, on turn %s",
+    16: "Player %s's known Board, on turn %s",
     17: "Place your shot Player 2",
     18: "Your accuracy was %s",
 }
@@ -45,13 +45,13 @@ def ask_xy(player=False):
 def horizontal_or_vertical(player=False):
     try:
         if player:
-            h_v = str(input('Horizontal or Vertical?'))[0]
-            if h_v[0].lower() == 'v':
+            h_v = str(input("Horizontal or Vertical?"))[0]
+            if h_v[0].lower() == "v":
                 return 0
-            elif h_v[0].lower() == 'h':
+            elif h_v[0].lower() == "h":
                 return 1
             else:
-                print('You failed to make a good choice!')
+                print("You failed to make a good choice!")
                 raise ValueError
         elif not player:
             return randint(0, 1)
@@ -65,7 +65,7 @@ def ask_type(player, valid=False):
     while not valid:
         try:
             p_type = str(input(responses[0] % player))
-            if ('man' or 1) == p_type.lower():
+            if ("man" or 1) == p_type.lower():
                 return True
             else:
                 return False
@@ -77,14 +77,17 @@ def check_sink(opponent, ship):
     ship_hp = 0
     for i in range(1, opponent.sides):
         for j in range(1, opponent.sides):
-            if ship.get_name() in opponent.storedBoard[i, j] and 'Damaged' in opponent.storedBoard[i, j]:
+            if (
+                ship.get_name() in opponent.storedBoard[i, j]
+                and "Damaged" in opponent.storedBoard[i, j]
+            ):
                 ship_hp += 1
 
     if ship.get_length() == ship_hp:
         # print(out_put_data[8] % ship.get_name())
         for boat in opponent.fleet:
-            if ship.get_name() == boat.__dict__['shipName']:
-                boat.__dict__['sunk'] = True
+            if ship.get_name() == boat.__dict__["shipName"]:
+                boat.__dict__["sunk"] = True
                 return True
 
 
@@ -99,7 +102,6 @@ class ShipError(BaseException):
 
 
 class GameWin(BaseException):
-
     def __init__(self, player1):
         self.hits = player1.hits
         self.misses = player1.misses
@@ -115,56 +117,62 @@ class GameWin(BaseException):
 
 
 class ShipBlueprint(object):
-
     def __init__(self, ship_length, ship_name, sunk):
         self.shipLength = ship_length
         self.shipName = ship_name
         self.sunk = sunk
 
     def get_name(self):
-        return self.__dict__['shipName']
+        return self.__dict__["shipName"]
 
     def get_length(self):
-        return self.__dict__['shipLength']
+        return self.__dict__["shipLength"]
 
     def __str__(self):
-        return '%s is %s tiles long.' % (self.__dict__['shipName'], self.__dict__['shipLength'])
+        return "%s is %s tiles long." % (
+            self.__dict__["shipName"],
+            self.__dict__["shipLength"],
+        )
 
     def __call__(self):
         return self.sunk
 
 
 class Board(object):
-
     def __init__(self, size=10):
         self.sides = size
-        self.startBoard = {(x, y): '~Water' for y in range(1, self.sides+1) for x in range(1, self.sides+1)}
+        self.startBoard = {
+            (x, y): "~Water"
+            for y in range(1, self.sides + 1)
+            for x in range(1, self.sides + 1)
+        }
         self.backedup_board = self.startBoard
         self.storedBoard = dict()
 
     def print_board(self):
         printable_board = OrderedDict(sorted(self.startBoard.items()))
         for y in range(1, self.sides):
-            print(' '.join(str(printable_board[x, y])[0] for x in range(1, self.sides)))
+            print(" ".join(str(printable_board[x, y])[0] for x in range(1, self.sides)))
 
     def print_masked_board(self, nonprint=False):
         masked_ships = OrderedDict(sorted(self.storedBoard.items()))
         for x in range(1, self.sides):
             for y in range(1, self.sides):
-                if 'Damage' in masked_ships[x, y]:
-                    masked_ships[x, y] = 'X'
-                elif 'Miss' in masked_ships[x, y]:
-                    masked_ships[x, y] = '^'
+                if "Damage" in masked_ships[x, y]:
+                    masked_ships[x, y] = "X"
+                elif "Miss" in masked_ships[x, y]:
+                    masked_ships[x, y] = "^"
                 else:
-                    masked_ships[x, y] = '~'
+                    masked_ships[x, y] = "~"
         if not nonprint:
             for y in range(1, self.sides):
-                print(' '.join(str(masked_ships[x, y])[0] for x in range(1, self.sides)))
+                print(
+                    " ".join(str(masked_ships[x, y])[0] for x in range(1, self.sides))
+                )
         elif nonprint:
             return masked_ships
 
     def backup(self, revert=False):
-
         def revert_board():
             self.startBoard = dict(self.backedup_board)
             return self.startBoard
@@ -181,43 +189,44 @@ class Board(object):
 
 
 class Player(Board):
-
     def __init__(self, type_player):
         Board.__init__(self)
         self.playerType = type_player
         self.misses = 0
         self.hits = 0
         self.fleet = [
-            ShipBlueprint(5, 'Aircraft Carrier', False),
-            ShipBlueprint(4, 'Battleship', False),
-            ShipBlueprint(3, 'Submarine', False),
-            ShipBlueprint(3, 'Destroyer', False),
-            ShipBlueprint(2, 'Patrol Boat', False)
+            ShipBlueprint(5, "Aircraft Carrier", False),
+            ShipBlueprint(4, "Battleship", False),
+            ShipBlueprint(3, "Submarine", False),
+            ShipBlueprint(3, "Destroyer", False),
+            ShipBlueprint(2, "Patrol Boat", False),
         ]
 
     def attack_player(self, opposition_player):
-
         def get_cords():
             return ask_xy(player=True), ask_xy(player=True)
 
         while True:
             try:
                 i_x, i_y = get_cords()
-                if ('Damaged' or 'Miss') in opposition_player.storedBoard[i_x, i_y]:
+                if ("Damaged" or "Miss") in opposition_player.storedBoard[i_x, i_y]:
                     print(responses[4] % (i_x, i_y))
                     raise ValueError
 
-                elif 'Water' in opposition_player.storedBoard[i_x, i_y]:
+                elif "Water" in opposition_player.storedBoard[i_x, i_y]:
                     print(responses[5] % (i_x, i_y))
-                    opposition_player.storedBoard[i_x, i_y] = 'Missed'
+                    opposition_player.storedBoard[i_x, i_y] = "Missed"
                     self.misses += 1
                     return False
 
                 else:
                     for ship in range(len(opposition_player.fleet)):
-                        if opposition_player.storedBoard[i_x, i_y] in opposition_player.fleet[ship].get_name():
+                        if (
+                            opposition_player.storedBoard[i_x, i_y]
+                            in opposition_player.fleet[ship].get_name()
+                        ):
                             print(responses[6] % (i_x, i_y))
-                            opposition_player.storedBoard[i_x, i_y] += 'Damaged'
+                            opposition_player.storedBoard[i_x, i_y] += "Damaged"
                             self.hits += 1
                             check_sink(opposition_player, self.fleet[ship])
                             check_win(self)
@@ -232,7 +241,7 @@ class Player(Board):
                 pass
 
     def place_ship_section(self, ship, pos_x, pos_y):
-        if 'Water' not in self.startBoard[pos_x, pos_y]:
+        if "Water" not in self.startBoard[pos_x, pos_y]:
             raise StopIteration()
         else:
             self.startBoard[pos_x, pos_y] = ship.get_name()
@@ -259,29 +268,47 @@ class Player(Board):
             try:
                 self.backup()
                 for number, ship in enumerate(self.fleet):
-                    if 'Man' in self.playerType:
+                    if "Man" in self.playerType:
                         while True:
                             try:
                                 if display:
                                     print(responses[9] % self.fleet[number].get_name())
-                                pos_x, pos_y, h_v = ask_xy(player=True), ask_xy(player=True), \
-                                                    horizontal_or_vertical(player=True)
+                                pos_x, pos_y, h_v = (
+                                    ask_xy(player=True),
+                                    ask_xy(player=True),
+                                    horizontal_or_vertical(player=True),
+                                )
                                 if display:
-                                    print(responses[10] % (self.fleet[number].get_name(), pos_x, pos_y, h_v))
+                                    print(
+                                        responses[10]
+                                        % (
+                                            self.fleet[number].get_name(),
+                                            pos_x,
+                                            pos_y,
+                                            h_v,
+                                        )
+                                    )
                                 self.ship_gen(self.fleet[number], pos_x, pos_y, h_v)
                             except ShipError:
                                 self.backup(revert=True)
                                 if display:
-                                    print(responses[11] % (self.fleet[number], pos_x, pos_y))
+                                    print(
+                                        responses[11]
+                                        % (self.fleet[number], pos_x, pos_y)
+                                    )
                                 continue
                             break
                         else:
                             on = False
                             return on
-                    elif 'Machine' in self.playerType:
+                    elif "Machine" in self.playerType:
                         while True:
                             try:
-                                pos_x, pos_y, h_v = ask_xy(), ask_xy(), horizontal_or_vertical()
+                                pos_x, pos_y, h_v = (
+                                    ask_xy(),
+                                    ask_xy(),
+                                    horizontal_or_vertical(),
+                                )
                                 self.ship_gen(self.fleet[number], pos_x, pos_y, h_v)
                             except ShipError:
                                 self.backup(revert=True)
@@ -301,7 +328,6 @@ class Player(Board):
 
 
 class AI(Player):
-
     def __init__(self, difficulty, type_player):
         Player.__init__(self, type_player)
         self.difficulty = difficulty
@@ -310,14 +336,13 @@ class AI(Player):
         self.even_moves = [(x, y) for x, y in self.startBoard if (x or y) % 2 == 0]
         self.odd_moves = [(x, y) for x, y in self.startBoard if (x or y) % 2 != 0]
         self.moves_left = [(x, y) for x, y in self.startBoard]
-        self.point_map = {(x, y): 0 for x in range(1, self.sides+1) for y in range(1, self.sides+1)}
+        self.point_map = {
+            (x, y): 0
+            for x in range(1, self.sides + 1)
+            for y in range(1, self.sides + 1)
+        }
         self.hit_map = []
-        self.delta_move = [
-            (1, 0),
-            (-1, 0),
-            (0, 1),
-            (0, -1)
-        ]
+        self.delta_move = [(1, 0), (-1, 0), (0, 1), (0, -1)]
 
     def easy_difficulty(self):
         pos_x, pos_y = self.moves_left[randint(0, len(self.moves_left))]
@@ -327,33 +352,46 @@ class AI(Player):
         # Target Mode
         if self.pos_hit:
             posx, posy = self.pos_hit[-1]
-            pos_moves = [((posx + move[0]), (posy + move[1])) for move in self.delta_move
-                         if ((posx + move[0]), (posy + move[1])) in self.moves_left]
+            pos_moves = [
+                ((posx + move[0]), (posy + move[1]))
+                for move in self.delta_move
+                if ((posx + move[0]), (posy + move[1])) in self.moves_left
+            ]
             if not pos_moves:
                 self.pos_hit.remove((posx, posy))
             else:
-                pos = pos_moves[randint(0, len(pos_moves)-1)]
+                pos = pos_moves[randint(0, len(pos_moves) - 1)]
                 x, y = pos
                 return x, y
         # Hunt(w/ parity) Mode
         else:
-            pos_e = [(pos[0], pos[1]) for pos in self.even_moves if pos in self.moves_left]
+            pos_e = [
+                (pos[0], pos[1]) for pos in self.even_moves if pos in self.moves_left
+            ]
             if pos_e:
-                pos_x, pos_y = pos_e[randint(0, len(pos_e)-1)]
+                pos_x, pos_y = pos_e[randint(0, len(pos_e) - 1)]
             else:
-                pos_x, pos_y = self.moves_left[randint(0, len(self.moves_left)-1)]
+                pos_x, pos_y = self.moves_left[randint(0, len(self.moves_left) - 1)]
             return pos_x, pos_y
 
     # All Following Functions are part of Hard Difficulty
     def check_delta_moves(self, coord, magnitude):
 
-        to_move = [possible_move for possible_move in
-                   [move for move in
+        to_move = [
+            possible_move
+            for possible_move in [
+                move
+                for move in [
                     [
-                        [(coord[0] + (c_x * mag), coord[1] + (c_y * mag))
-                         for mag in range(1, magnitude)]
-                        for c_x, c_y in self.delta_move] if coord in self.moves_left]
-                   if magnitude == possible_move]
+                        (coord[0] + (c_x * mag), coord[1] + (c_y * mag))
+                        for mag in range(1, magnitude)
+                    ]
+                    for c_x, c_y in self.delta_move
+                ]
+                if coord in self.moves_left
+            ]
+            if magnitude == possible_move
+        ]
         return to_move
         #
         # all_moves = []
@@ -367,9 +405,18 @@ class AI(Player):
         #     return moves_possible
 
     def valid_attack_move(self, coord):
-        test = [item for sublist in
-                [self.check_delta_moves(coord, ship_length) for ship_length in
-                 [self.fleet[ship].get_length() for ship in range(len(self.fleet)) if not self.fleet[ship]()]] for item in sublist]
+        test = [
+            item
+            for sublist in [
+                self.check_delta_moves(coord, ship_length)
+                for ship_length in [
+                    self.fleet[ship].get_length()
+                    for ship in range(len(self.fleet))
+                    if not self.fleet[ship]()
+                ]
+            ]
+            for item in sublist
+        ]
 
         # all_moves = []
         # fleet = [self.fleet[ship].get_length() for ship in range(len(self.fleet)) if not self.fleet[ship]()]
@@ -388,18 +435,28 @@ class AI(Player):
 
     def best_move(self):
         max_value = max(self.point_map.values())
-        best_moves = [key for key in self.point_map.keys() if self.point_map[key] == max_value]
+        best_moves = [
+            key for key in self.point_map.keys() if self.point_map[key] == max_value
+        ]
         return best_moves[randint(0, len(best_moves)) - 1]
 
     def remove_move(self, coord):
         self.moves_left.remove(coord)
 
     def reset_point_map(self):
-        self.point_map = {(x, y): 0 for x in range(1, self.sides+1) for y in range(1, self.sides+1)}
+        self.point_map = {
+            (x, y): 0
+            for x in range(1, self.sides + 1)
+            for y in range(1, self.sides + 1)
+        }
 
     def check_adj_tiles(self, map_to_check):
-        return [(x1+d_x, y1+d_y) for x1, y1 in map_to_check for d_x, d_y in self.delta_move
-                if (x1+d_x, y1+d_y) in self.moves_left]
+        return [
+            (x1 + d_x, y1 + d_y)
+            for x1, y1 in map_to_check
+            for d_x, d_y in self.delta_move
+            if (x1 + d_x, y1 + d_y) in self.moves_left
+        ]
 
     def adjust_for_hits(self):
         # Can create a for loop to run this over and over again
@@ -445,17 +502,20 @@ class AI(Player):
         if (a_x, a_y) in self.moves_left:
             print("FAIL at %s,%s" % (a_x, a_y))
 
-        if 'Water' in opposition_player.storedBoard[a_x, a_y]:
+        if "Water" in opposition_player.storedBoard[a_x, a_y]:
             # print(out_put_data[5] % (a_x, a_y))
-            opposition_player.storedBoard[a_x, a_y] = 'Missed'
+            opposition_player.storedBoard[a_x, a_y] = "Missed"
             self.misses += 1
             self.hit_state = False
 
         else:
             for ship in range(len(opposition_player.fleet)):
-                if opposition_player.storedBoard[a_x, a_y] in opposition_player.fleet[ship].get_name():
+                if (
+                    opposition_player.storedBoard[a_x, a_y]
+                    in opposition_player.fleet[ship].get_name()
+                ):
                     # print(out_put_data[6] % (opposition_player.fleet[ship].get_name(), a_x, a_y))
-                    opposition_player.storedBoard[a_x, a_y] += 'Damaged'
+                    opposition_player.storedBoard[a_x, a_y] += "Damaged"
                     self.hits += 1
                     check_sink(opposition_player, opposition_player.fleet[ship])
                     check_win(self)
@@ -470,23 +530,23 @@ def _start_game(x=1):
     global Display
     display__start = Display
     if not display__start:
-        p1 = AI(difficulty=2, type_player='Machine')
+        p1 = AI(difficulty=2, type_player="Machine")
         p1.fleet_gen()
-        p2 = AI(difficulty=2, type_player='Machine')
+        p2 = AI(difficulty=2, type_player="Machine")
         p2.fleet_gen()
     elif display__start:
         one = ask_type(1)
         if one:
-            p1 = Player(type_player='Man')
+            p1 = Player(type_player="Man")
         else:
-            p1 = AI(difficulty=2, type_player='Machine')
-            p1.playerType = 'Machine'
+            p1 = AI(difficulty=2, type_player="Machine")
+            p1.playerType = "Machine"
         p1.fleet_gen()
         two = ask_type(2)
         if two:
-            p2 = Player(type_player='Man')
+            p2 = Player(type_player="Man")
         else:
-            p2 = AI(difficulty=2, type_player='Machine')
+            p2 = AI(difficulty=2, type_player="Machine")
         p2.fleet_gen()
         input(responses[14])
     while x:
@@ -499,7 +559,7 @@ def _start_game(x=1):
                     turns += 1
                     if display__start:
                         p2.print_masked_board()
-                        print(responses[16] % ('Two', turns))
+                        print(responses[16] % ("Two", turns))
                 elif turns % 2 != 0:
                     if display__start:
                         print(responses[17])
@@ -507,7 +567,7 @@ def _start_game(x=1):
                     turns += 1
                     if display__start:
                         p1.print_masked_board()
-                        print(responses[16] % ('One', turns))
+                        print(responses[16] % ("One", turns))
             except GameWin:
                 x -= 1
                 return False
@@ -517,5 +577,5 @@ if __name__ == "__main__":
     for x in range(10):
         if x % 10 == 0:
             print(x)
-        cProfile.run('_start_game()')
+        cProfile.run("_start_game()")
         # _start_game()

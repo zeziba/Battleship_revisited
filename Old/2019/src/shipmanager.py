@@ -6,7 +6,7 @@ class ShipSunkError(Exception):
     pass
 
 
-class ShipManager():
+class ShipManager:
     def __init__(self, config, name, symbol):
         self.config = config
         self.__symbol = symbol
@@ -62,7 +62,9 @@ class ShipManager():
             return False
 
     def sunk(self):
-        if set(set([tuple(x) for x in self.position]) - set([tuple(y) for y in self.hits])):
+        if set(
+            set([tuple(x) for x in self.position]) - set([tuple(y) for y in self.hits])
+        ):
             return False
         return True
 

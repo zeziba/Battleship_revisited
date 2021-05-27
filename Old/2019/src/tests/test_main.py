@@ -3,7 +3,6 @@ import unittest
 
 
 class TestMethodsMain(unittest.TestCase):
-
     class MyOut(object):
         def __init__(self):
             self.data = []
@@ -41,10 +40,10 @@ class TestMethodsMain(unittest.TestCase):
         try:
             sys.stdout = out
             from src import main
+
             b = main.Battleship()
             b.start()
         finally:
             sys.stdout = std_out
 
         self.assertEqual(correct_out, str(out))
-

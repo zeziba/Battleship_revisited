@@ -10,17 +10,17 @@ defaultconfig = {
         "config file": CONFIGFILE,
         "board size": 10,
         "ship count": 5,
-        "ships": '''battleship:1,carrier:1,patrol boat:1,submarine:1,destroyer:1''',
-        'Battleship': 4,
-        'Carrier': 5,
-        'Patrol Boat': 2,
-        'Submarine': 3,
-        'Destroyer': 3
+        "ships": """battleship:1,carrier:1,patrol boat:1,submarine:1,destroyer:1""",
+        "Battleship": 4,
+        "Carrier": 5,
+        "Patrol Boat": 2,
+        "Submarine": 3,
+        "Destroyer": 3,
     }
 }
 
 
-class ConfigManager():
+class ConfigManager:
     def __init__(self, base=BASELOCAION):
         self.config = configparser.ConfigParser()
         self.configfile = os.path.join(base if base else os.getcwd(), CONFIGFILE)
@@ -37,6 +37,7 @@ class ConfigManager():
     def open(self):
         try:
             import os
+
             if not os.path.exists(self.configfile):
                 raise FileNotFoundError()
             self.config.read(self.configfile)

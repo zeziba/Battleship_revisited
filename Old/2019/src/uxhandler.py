@@ -21,8 +21,8 @@ class UXHandle:
     def get(self, option):
         return self.config[option]
 
-    def get_input(self, out='get input num'):
-        return str(input(out if out != 'get input name' else self.out[out]))
+    def get_input(self, out="get input num"):
+        return str(input(out if out != "get input name" else self.out[out]))
 
     def display(self, data):
         print(data)

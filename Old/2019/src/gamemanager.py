@@ -5,10 +5,10 @@ import playermanager
 import shipmanager
 
 
-class GameManager():
+class GameManager:
     def __init__(self, config):
         self.config = config
-        self.__size = int(self.config['board size'])
+        self.__size = int(self.config["board size"])
 
         self.__state = False
 
@@ -24,8 +24,8 @@ class GameManager():
             if not isinstance(board, boardmanager.BoardManager):
                 raise TypeError("Not a board object")
 
-        ship_count = int(self.config['ship count'])
-        if len(board.board['ships']) > ship_count:
+        ship_count = int(self.config["ship count"])
+        if len(board.board["ships"]) > ship_count:
             raise Exception("Too many ships present on the board!")
 
         if not self.check_if_valid(board):
@@ -39,11 +39,16 @@ class GameManager():
     @staticmethod
     def _m(ship1, ship2):
         if ship1[0] == ship2[0]:
-            return float('inf')
+            return float("inf")
         return (ship2[1] - ship1[1]) / (ship2[0] - ship1[0])
 
     def _check_if_in_bounds(self, ship):
-        if ship[0] < 0 or ship[1] < 0 or ship[0] > int(self.config['board size']) or ship[1]:
+        if (
+            ship[0] < 0
+            or ship[1] < 0
+            or ship[0] > int(self.config["board size"])
+            or ship[1]
+        ):
             return False
         return True
 
@@ -57,7 +62,7 @@ class GameManager():
                 continue
             self._check_if_in_bounds(pos)
             n_m = self._m(ship.position[0], pos)
-            if m != n_m and n_m != float('inf') and n_m != 0:
+            if m != n_m and n_m != float("inf") and n_m != 0:
                 return False
             if pos[0] - x0 > ship.length or pos[1] - y0 > ship.length:
                 return False
@@ -69,7 +74,10 @@ class GameManager():
         # Check if the board is valid, display board is not checked.
         # Does this by checking if the correct number of ships is present then checks the position of each.
         # Checks if a player has won the game and returns a value based on that information
-        ships_available = {i.split(":")[0].lower().replace('"', ""): int(i.split(":")[1]) for i in self.config['ships'].split(',')}
+        ships_available = {
+            i.split(":")[0].lower().replace('"', ""): int(i.split(":")[1])
+            for i in self.config["ships"].split(",")
+        }
         ship_data = {ship.name: 0 for ship in board.ships}
 
         # Check if ships are inside the board along with number of each type
@@ -94,33 +102,40 @@ class GameManager():
             :kwargs dirs:   Required, playermanager.DIRS
         :return: True/False of success
         """
-        player = kwargs['player']
-        ux = kwargs['ux']
+        player = kwargs["player"]
+        ux = kwargs["ux"]
         boats = [ship for ship in player.ship_names]
-        board = kwargs['board']
-        dirs = kwargs['dirs']
+        board = kwargs["board"]
+        dirs = kwargs["dirs"]
         while boats:
             boat = boats[-1]
             # get Dir and (x, y) for boat, NO checking is done right now
             # TODO: Check if boat is valid here and make player retry
             if isinstance(player, playermanager.AI):
                 _dir = random.choice(dirs)
-                x, y = random.randint(0, int(self.config['board size'])), random.randint(0,
-                                                                                         int(self.config['board size']))
+                x, y = random.randint(
+                    0, int(self.config["board size"])
+                ), random.randint(0, int(self.config["board size"]))
             else:
                 # TODO: Add GUI to place boats, would be easier and make more sense here.
                 try:
-                    ux.display(ux.out['placement'].format(boat))
+                    ux.display(ux.out["placement"].format(boat))
                     _dir = dirs[int(ux.get_input(ux.out["get dir"]))]
-                    _out = ux.out["get input num"].format(0, int(self.config['board size']) - 1)
+                    _out = ux.out["get input num"].format(
+                        0, int(self.config["board size"]) - 1
+                    )
                     x, y = int(ux.get_input(_out)), int(ux.get_input(_out))
                 except ValueError:
-                    ux.display(ux.out['failed input'])
+                    ux.display(ux.out["failed input"])
                     continue
-            if x + int(self.config[boat]) > self.__size or y + int(self.config[boat]) > self.__size:
+            if (
+                x + int(self.config[boat]) > self.__size
+                or y + int(self.config[boat]) > self.__size
+            ):
                 continue
-            if any(b.special_check(x, y) for b in board.ships) or \
-                    any([x < 0, x > int(self.__size), y < 0, y > int(self.__size)]):
+            if any(b.special_check(x, y) for b in board.ships) or any(
+                [x < 0, x > int(self.__size), y < 0, y > int(self.__size)]
+            ):
                 ux.display(ux.out["failed input"])
                 continue
             s = shipmanager.ShipManager(self.config, boat, boat[0])
@@ -149,17 +164,29 @@ class GameManager():
         # Start placing boats.
         ux.display(ux.out["game start"])
 
-        self.allow_player_place_boats(player=p1, board=p1_b, ux=ux, dirs=list(playermanager.DIRS.values()))
+        self.allow_player_place_boats(
+            player=p1, board=p1_b, ux=ux, dirs=list(playermanager.DIRS.values())
+        )
         while not p1_b.validate_board():
             p1_b.reset()
-            self.allow_player_place_boats(player=p1, board=p1_b, ux=ux, dirs=list(playermanager.DIRS.values()))
-        self.allow_player_place_boats(player=p2, board=p2_b, ux=ux, dirs=list(playermanager.DIRS.values()))
+            self.allow_player_place_boats(
+                player=p1, board=p1_b, ux=ux, dirs=list(playermanager.DIRS.values())
+            )
+        self.allow_player_place_boats(
+            player=p2, board=p2_b, ux=ux, dirs=list(playermanager.DIRS.values())
+        )
         while not p2_b.validate_board():
             p2_b.reset()
-            self.allow_player_place_boats(player=p2, board=p2_b, ux=ux, dirs=list(playermanager.DIRS.values()))
+            self.allow_player_place_boats(
+                player=p2, board=p2_b, ux=ux, dirs=list(playermanager.DIRS.values())
+            )
 
         while not self.check_win(p1_b) and not self.check_win(p2_b):
-            p, _p = ((p1, p1_b), (p2, p2_b)) if p1.turn < p2.turn else ((p2, p2_b), (p1, p1_b))
+            p, _p = (
+                ((p1, p1_b), (p2, p2_b))
+                if p1.turn < p2.turn
+                else ((p2, p2_b), (p1, p1_b))
+            )
             ux.display(ux.out["turn"].format(p[0].name, p[0].turn + 1))
 
             if not isinstance(p[0], playermanager.AI):
@@ -176,15 +203,27 @@ class GameManager():
                 except playermanager.PlayerAlreadyShotError:
                     ux.display(ux.out["attack repeat"].format(x, y))
                 except shipmanager.ShipSunkError as error:
-                    ux.display(ux.out['attack sunk'].format(error.args, x, y))
+                    ux.display(ux.out["attack sunk"].format(error.args, x, y))
             else:
                 try:
                     if p[0].fire_shot(board=p[1]):
-                        ux.display(ux.out["attack success"].format(p[0].fired[-1][0], p[0].fired[-1][1]))
+                        ux.display(
+                            ux.out["attack success"].format(
+                                p[0].fired[-1][0], p[0].fired[-1][1]
+                            )
+                        )
                     else:
-                        ux.display(ux.out["attack failed"].format(p[0].fired[-1][0], p[0].fired[-1][1]))
+                        ux.display(
+                            ux.out["attack failed"].format(
+                                p[0].fired[-1][0], p[0].fired[-1][1]
+                            )
+                        )
                 except shipmanager.ShipSunkError as error:
-                    ux.display(ux.out['attack sunk'].format(error.args, p[0].fired[-1][0], p[0].fired[-1][1]))
+                    ux.display(
+                        ux.out["attack sunk"].format(
+                            error.args, p[0].fired[-1][0], p[0].fired[-1][1]
+                        )
+                    )
 
             p[1].update_display()
             ux.display("\n".join("{:<2}".format(d) for d in p[1].display))

@@ -2,16 +2,16 @@ import sys
 import unittest
 
 defaultconfig = {
-    "base location": '',
+    "base location": "",
     "config file": "config.ini",
     "board size": 10,
     "ship count": 5,
-    "ships": '''"Battleship":1,"Carrier":1,"Patrol Boat":1,"Submarine":1,"Destroyer":1''',
-    'Battleship': 4,
-    'Carrier': 5,
-    'Patrol Boat': 2,
-    'Submarine': 3,
-    'Destroyer': 3
+    "ships": """"Battleship":1,"Carrier":1,"Patrol Boat":1,"Submarine":1,"Destroyer":1""",
+    "Battleship": 4,
+    "Carrier": 5,
+    "Patrol Boat": 2,
+    "Submarine": 3,
+    "Destroyer": 3,
 }
 
 test_point = [1, 1]
@@ -45,9 +45,9 @@ class testboard:
         self.__board = {
             "display": list(),
             "ships": list(),
-            'point map': [[0 for _ in range(10)] for _ in range(10)]
+            "point map": [[0 for _ in range(10)] for _ in range(10)],
         }
-        self.__board['ships'].append(tb)
+        self.__board["ships"].append(tb)
 
     @property
     def board(self):
@@ -55,18 +55,18 @@ class testboard:
 
     @property
     def ships(self):
-        return self.board['ships']
+        return self.board["ships"]
 
     @property
     def size(self):
-        return defaultconfig['board size']
+        return defaultconfig["board size"]
 
     @property
     def point_map(self):
-        return self.__board['point map']
+        return self.__board["point map"]
 
 
-size = int(defaultconfig['board size'])
+size = int(defaultconfig["board size"])
 
 
 class testplayer:
@@ -98,13 +98,10 @@ class TestMethodsBoardManager(unittest.TestCase):
         self.assertIs(type(b), boardmanager.BoardManager)
 
     def test_board(self):
-        __board = {
-            "display": list(),
-            "ships": list(),
-            'point map': list()
-        }
+        __board = {"display": list(), "ships": list(), "point map": list()}
 
         from src import boardmanager
+
         b = boardmanager.BoardManager(defaultconfig, testplayer())
 
         self.assertEqual(b.board, __board)
@@ -125,16 +122,16 @@ class TestMethodsBoardManager(unittest.TestCase):
 
         b.update_display()
 
-        tmap = ['~' * 10 for _ in range(10)]
+        tmap = ["~" * 10 for _ in range(10)]
         self.assertEqual(b.display, tmap)
 
         # Tests the hit markers
-        b.board['ships'][0].update_hits()
+        b.board["ships"][0].update_hits()
 
         b.update_display()
 
         t = list(tmap[test_point[0]])
-        t[test_point[1]] = 'X'
+        t[test_point[1]] = "X"
         tmap[test_point[0]] = "".join(t)
 
         self.assertEqual(tmap, b.display)
@@ -157,12 +154,14 @@ class TestMethodsBoardManager(unittest.TestCase):
 
     def test_size(self):
         from src import boardmanager
+
         b = boardmanager.BoardManager(defaultconfig, testplayer())
 
-        self.assertEqual(b.size, defaultconfig['board size'])
+        self.assertEqual(b.size, defaultconfig["board size"])
 
     def test_reset(self):
         from src import boardmanager
+
         b = boardmanager.BoardManager(defaultconfig, testplayer())
 
         b.add_ship(testboat(test_point))
@@ -178,10 +177,11 @@ class TestMethodsBoardManager(unittest.TestCase):
 
     def test_iter(self):
         from src import boardmanager
+
         b = boardmanager.BoardManager(defaultconfig, testplayer())
 
         b.add_ship(testboat(test_point))
         b.update_display()
 
         for row in b:
-            self.assertEqual('~' * b.size, row)
+            self.assertEqual("~" * b.size, row)
