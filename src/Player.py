@@ -1,12 +1,11 @@
 from dataclasses import dataclass
-from enum import Enum
-
-import Board
+from enum import Enum, auto
+import src.Board as Board
 
 
 class PlayerType(Enum):
-    PLAYER: 0
-    COMPUTER: 1
+    PLAYER = auto()
+    COMPUTER = auto()
 
     def __str__(self):
         return f"{self.name}"

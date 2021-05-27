@@ -14,11 +14,11 @@ class ShipType(Enum):
 
 
 Lengths = {
-    ShipType.Battleship: 4,
-    ShipType.Carrier: 5,
-    ShipType.PatrolBoat: 2,
-    ShipType.Submarine: 3,
-    ShipType.Destroyer: 3,
+    ShipType.BATTLESHIP: 4,
+    ShipType.CARRIER: 5,
+    ShipType.PATROL_BOAT: 2,
+    ShipType.SUBMARINE: 3,
+    ShipType.DESTROYER: 3,
 }
 
 
