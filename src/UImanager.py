@@ -8,4 +8,3 @@ def get_coords():
 
 class Commands(Enum):
     INPUT = "input"
-
