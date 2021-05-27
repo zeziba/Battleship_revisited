@@ -1,10 +1,13 @@
 # .coveragerc to control coverage.py
 [run]
 branch = True
+source =
+    src
+    tests
 
 [paths]
 source =
-    src/
+    src
 
 [report]
 # Regexes for lines to exclude from consideration
