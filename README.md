@@ -12,3 +12,6 @@ As of January 9, 2019 this program is in a working condition. Below are some thi
 
 
 The current form of the program basically uses a greedy algorithm to decide where to fire a shot. This has the benefit of winning a game in roughly 60-80 moves which gives a human player many opportunities to win.
+
+# To setup
+> pip install -r requirements.txt
