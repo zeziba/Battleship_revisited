@@ -15,5 +15,11 @@
 .pytest_cache/
 
 # Ignore Coverage
-coverage/
-/venv/
+coverage/*
+/coverage_html_report/*
+
+# Ignore the venv files
+/venv/*
+
+# Ignore the install files
+/src/Battleship_revisited.egg-info/*

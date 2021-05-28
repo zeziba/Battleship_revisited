@@ -1,17 +1,34 @@
 from dataclasses import dataclass
 from enum import Enum, auto
-import src.Board as Board
+import Fleet
+import Board
 
 
-class PlayerType(Enum):
-    PLAYER = auto()
-    COMPUTER = auto()
-
-    def __str__(self):
-        return f"{self.name}"
+class State(Enum):
+    PERSON: auto()
+    AI: auto()
 
 
 @dataclass()
 class Player:
-    type: PlayerType
-    board: Board.Board
+    __state: State
+    __board: Board.Board
+    __fleet: Fleet.GeneralFleet
+
+    @property
+    def state(self):
+        return self.__state
+
+    @property
+    def fleet(self):
+        return self.__fleet
+
+    @property
+    def board(self):
+        return self.__board
+
+    def place_fleet(self):
+        if self.state is State.AI:
+            self.fleet.generate()
+        else:
+            self.fleet.place_fleet()
