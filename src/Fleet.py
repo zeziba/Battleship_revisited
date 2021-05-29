@@ -1,26 +1,13 @@
 from dataclasses import dataclass
-from enum import Enum, auto, unique
+from enum import Enum, auto
 from random import choice
 
 from Ship import Ship, Direction
+import src.GameRules
 
 
-@unique
-class Fleet(Enum):
-    CARRIER = auto()
-    BATTLESHIP = auto()
-    PATROLBOAT = auto()
-    SUBMARINE = auto()
-    DESTROYER = auto()
-
-
-FLEET = {
-    Fleet.CARRIER: 5,
-    Fleet.BATTLESHIP: 4,
-    Fleet.PATROLBOAT: 2,
-    Fleet.SUBMARINE: 3,
-    Fleet.DESTROYER: 3,
-}
+Fleet = Enum("Fleet", {name: auto() for name in src.GameRules.FLEET})
+FLEET = {ship: src.GameRules.FLEET[ship.name] for ship in list(Fleet)}
 
 
 @dataclass

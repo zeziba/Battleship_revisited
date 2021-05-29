@@ -17,6 +17,7 @@
 # Ignore Coverage
 coverage/*
 /coverage_html_report/*
+.coverage
 
 # Ignore the venv files
 /venv/*

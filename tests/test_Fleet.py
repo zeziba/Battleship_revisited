@@ -4,9 +4,9 @@ import src.Fleet
 
 
 def test_fleet():
-    for item in list(src.Fleet.Fleet):
-        assert item.name is not None
-        assert item.value is not None
+    for i in list(src.Fleet.Fleet):
+        assert hasattr(i, "name")
+        assert hasattr(i, "value")
 
 
 def test_FLEET():

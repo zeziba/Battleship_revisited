@@ -2,7 +2,9 @@ from dataclasses import dataclass, field
 
 import Tile
 
-SIZE: int = 10
+import src.GameRules
+
+SIZE: int = src.GameRules.SIZE
 
 
 @dataclass()
@@ -15,11 +17,11 @@ class Board:
     def tiles(self) -> tuple[Tile.Tile]:
         return tuple(self.__tiles)
 
-    def get(self, px, py):
+    def get(self, px, py) -> Tile.Tile:
         return self.tiles[px + py * SIZE]
 
     def tiles_set(self, x:int, y: int, tile: Tile) -> None:
         self.__tiles[x + y * SIZE] = tile
 
-    def generate_board(self):
+    def generate_board(self) -> None:
         self.__tiles = [Tile.Tile(False, None) for _ in range(SIZE * SIZE)]
