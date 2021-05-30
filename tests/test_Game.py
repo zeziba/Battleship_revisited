@@ -62,6 +62,10 @@ class TestGame:
         for p in g.player:
             assert len(p.fleet.fleet) == len(src.Game.GameRules.FLEET)
             assert len(p.board.tiles) == src.Game.GameRules.SIZE ** 2
+        src.Game.TESTING = False
+        # Just need to check if g.set_up still works if TESTING is disabled
+        g.set_up()
+        src.Game.TESTING = True
 
     def test_game_check_win(self, game):
         g = game
