@@ -36,11 +36,6 @@ class TestGenerateFleet:
         fleet.generate()
         assert len(fleet.fleet) == len(src.Fleet.FLEET)
 
-    def test_place_fleet(self):
-        fleet = src.Fleet.GeneralFleet()
-        assert fleet.place_fleet() is None
-        # TODO: Finish out this test
-
     def test_generated_fleet(self, resource):
         """Tests Generated Fleet"""
         f = resource
