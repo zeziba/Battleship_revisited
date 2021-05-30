@@ -10,6 +10,7 @@ FLEET = {
     "DESTROYER": 3,
 }
 
+
 class State(Enum):
     RUNNING = auto()
     STOPPED = auto()

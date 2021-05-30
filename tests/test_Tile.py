@@ -7,7 +7,7 @@ import src.Tile
 
 @pytest.fixture()
 def tile():
-    yield src.Tile.Tile(False, choice(list(src.Tile.Fleet)))
+    yield src.Tile.Tile(None, False)
 
 
 class TestTile:
@@ -27,3 +27,4 @@ class TestTile:
         t = tile
         t.hit = not t.hit
         assert t.hit is True
+        t.hit = not t.hit

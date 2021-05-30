@@ -3,6 +3,7 @@ from random import choice, randint
 import pytest
 
 import src.Ship
+import src.GameRules
 
 
 def direction() -> src.Ship.Direction:
@@ -10,9 +11,9 @@ def direction() -> src.Ship.Direction:
 
 
 def ship() -> src.Ship.Ship:
-    name = "".join([chr(randint(97, 122)) for _ in range(randint(10, 100))])
-    length = randint(1, 5)
-    return src.Ship.Ship(name, length, direction())
+    name = choice(list(src.GameRules.FLEET.keys()))
+    length = src.GameRules.FLEET[name]
+    return src.Ship.Ship(name, length)
 
 
 def test_direction():
@@ -28,7 +29,7 @@ def resource() -> src.Ship.Ship:
 
 
 def coord() -> int:
-    return randint(0, 10)
+    return randint(0, 9)
 
 
 class TestShip:
@@ -47,6 +48,9 @@ class TestShip:
     def test_ship_has_is_sunk(self, resource):
         assert hasattr(resource, "is_sunk")
 
+    def test_ship_has_is_placed(self, resource):
+        assert hasattr(resource, "is_placed")
+
     def test_ship_generation(self, resource):
         """Tests ship generation"""
         assert type(resource) is src.Ship.Ship
@@ -57,25 +61,72 @@ class TestShip:
 
     def test_ship_placement(self, resource):
         """Tests Ship Placement"""
-        s = resource
-        assert callable(s.place_ship)
-        assert s.place_ship(coord(), coord()) is True
-        assert s.place_ship(coord(), coord()) is False
-        assert len(s.positions) == resource.length
+        assert callable(resource.place_ship)
+
+        b = src.Ship.Board.Board()
+        b.generate_board()
+
+        # Check vertical
+        # Check at (0, 0)
+        s = ship()
+        assert s.place_ship(0, 0, b) is True
+        assert s.is_placed is True
+
+        # Check if can place same ship
+        assert s.place_ship(0, 0, b) is False
+
+        # Check each position to ensure out of bounds errors
+        for i in range(src.GameRules.SIZE):
+            s = ship()
+            z = src.GameRules.SIZE - s.length + 1
+            with pytest.raises(IndexError):
+                assert s.place_ship(i, z, b) is True
+        # Check random locations of the board to ensure it places the ships correctly
+        for _ in range(50):
+            s = ship()
+            x, y = coord(), coord()
+            y = y if y - s.length < 0 else y - s.length
+            assert s.place_ship(x, y, b) is True
+            assert s.is_placed is True
+
+        # Check horizontal
+        # Check at (0, 0)
+        s = ship()
+        s.directionality = src.Ship.Direction.HORIZONTAL
+        assert s.place_ship(0, 0, b) is True
+        assert s.is_placed is True
+
+        # Check each position to ensure out of bounds errors
+        for i in range(src.GameRules.SIZE):
+            s = ship()
+            s.directionality = src.Ship.Direction.HORIZONTAL
+            z = src.GameRules.SIZE - s.length + 1
+            with pytest.raises(IndexError):
+                assert s.place_ship(z, i, b) is True
+        # Check random locations of the board to ensure it places the ships correctly
+        for _ in range(50):
+            s = ship()
+            s.directionality = src.Ship.Direction.HORIZONTAL
+            x, y = coord(), coord()
+            x = x if x - s.length < 0 else x - s.length
+            assert s.place_ship(x, y, b) is True
+            assert s.is_placed is True
 
     def test_ship_hit(self, resource):
         """Test if a ship is hit or not"""
         s = resource
+        b = src.Ship.Board.Board()
+        b.generate_board()
         assert callable(s.hit)
         assert s.hit(coord(), coord()) is False
-        s.place_ship(coord(), coord())
-        start_hp = s.hit_points
+        s.place_ship(0, 0, b)
+        hp = s.hit_points
         assert s.is_sunk is False
         for key in s.positions:
             y, x = key.split(",")
-            assert start_hp == s.hit_points
+            assert hp == s.hit_points
             assert s.hit(int(x), int(y)) is True
-            start_hp -= 1
+            hp -= 1
             assert s.hit(int(x), int(y)) is False
-            assert start_hp == s.hit_points
+            assert hp == s.hit_points
         assert s.is_sunk is True

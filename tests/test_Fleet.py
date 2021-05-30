@@ -46,4 +46,16 @@ class TestGenerateFleet:
         f = resource
         assert f.fleet is not None
         for ship in f.fleet:
-            assert type(f.fleet[ship]) is src.Fleet.Ship
+            assert type(f.fleet[ship]) is src.Fleet.Ship.Ship
+
+    def test_fleet_hit(self, resource):
+        f = resource
+        board = src.Fleet.Ship.Board.Board()
+        board.generate_board()
+        for ship in f.fleet:
+            f.fleet[ship].place_ship(0, 0, board)
+        for ship in f.fleet:
+            for pos in f.fleet[ship].positions:
+                y, x = pos.split(",")
+                assert f.hit(x, y) is True
+        assert f.hit(0, 0) is False

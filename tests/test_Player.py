@@ -32,13 +32,27 @@ class TestPlayer:
         assert hasattr(player, "board")
 
     def test_player_can_place_fleet(self, player):
-        assert hasattr(player, "place_fleet")
+        assert hasattr(player, "generate_fleet")
+
+    def test_player_has_get_ships(self, player):
+        assert hasattr(player, "get_ships")
+
+    def test_player_get_ships(self, player):
+        p = player
+        p.generate_fleet()
+        b = src.Player.Board.Board()
+        b.generate_board()
+        for index, ship in enumerate(p.fleet.fleet):
+            p.fleet.fleet[ship].place_ship(index, 0, b)
+        for ship in p.get_ships:
+            assert type(ship) is src.Player.Fleet.Ship.Ship
 
     @pytest.mark.parametrize("nth", [0 for _ in range(10)])
     def test_player_fleet_placement(self, player, nth):
+        # TODO: Finish implementing
         p = player
         assert len(p.fleet.fleet) == 0
-        p.place_fleet()
+        p.generate_fleet()
         assert len(p.fleet.fleet) > 0
 
     def test_player_destroyed(self, player):

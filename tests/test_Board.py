@@ -22,7 +22,7 @@ class TestBoard:
         b = board
         b.generate_board()
         assert b.get(0, 0).has is None
-        b.tiles_set(0, 0, src.Board.Tile.Tile(False, src.Board.Tile.Fleet.SUBMARINE))
+        b.tiles_set(0, 0, src.Board.Tile.Tile(False, "Ship"))
 
     def test_board_get(self, board):
         b = board

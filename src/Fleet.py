@@ -1,8 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum, auto
-from random import choice
 
-from Ship import Ship, Direction
+import Ship
 import src.GameRules
 
 
@@ -22,7 +21,7 @@ class GeneralFleet:
         self.__fleet = dict()
         for ship in list(Fleet):
             # Random directionality choice for now
-            self.__fleet[ship] = Ship(ship.name, FLEET[ship], choice(list(Direction)))
+            self.__fleet[ship] = Ship.Ship(ship.name, FLEET[ship])
 
     def place_fleet(self):
         self.__fleet = dict()
@@ -30,3 +29,9 @@ class GeneralFleet:
             # TODO: Once UI layer is give control and get coords of ship placement
             # TODO: Finish testing of this method
             pass
+
+    def hit(self, px, py) -> bool:
+        for ship in self.fleet:
+            if self.fleet[ship].hit(px, py):
+                return True
+        return False

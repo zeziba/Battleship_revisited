@@ -1,21 +1,20 @@
 from dataclasses import dataclass, field
 
-from Fleet import Fleet
-
 
 @dataclass
 class Tile:
+    contains: None
     __hit: False = field(default_factory=bool)
-    contains: None = field(default_factory=Fleet)
 
     @property
-    def hit(self):
+    def hit(self) -> bool:
         return self.__hit
 
     @hit.setter
-    def hit(self, value: bool):
-        self.__hit = value
+    def hit(self, value: bool) -> None:
+        if not self.hit:
+            self.__hit = value
 
     @property
-    def has(self):
+    def has(self) -> object:
         return self.contains

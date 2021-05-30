@@ -27,14 +27,19 @@ class Player:
     def board(self) -> Board.Board:
         return self.__board
 
-    def place_fleet(self) -> None:
+    def generate_fleet(self) -> None:
         if self.state is State.AI:
             self.fleet.generate()
         else:
             self.fleet.generate()
 
     @property
+    def get_ships(self) -> iter:
+        for ship in self.fleet.fleet:
+            yield self.fleet.fleet[ship]
+
+    @property
     def destroyed(self) -> bool:
-        if self.fleet.fleet is None:
+        if len(self.fleet.fleet) == 0:
             return True
         return all(self.fleet.fleet[ship].is_sunk for ship in self.fleet.fleet)
