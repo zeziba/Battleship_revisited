@@ -1,5 +1,6 @@
 import pytest
 import src.Game
+src.Game.TESTING = True
 
 
 @pytest.fixture()
