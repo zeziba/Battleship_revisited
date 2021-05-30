@@ -24,6 +24,8 @@ class TestTile:
         assert tile.contains is None
         tile.contains = 1
         assert tile.contains is not None
+        with pytest.raises(IndexError):
+            tile.contains = 5
 
     def test_tile_init_hit(self, tile):
         assert tile.hit is False
