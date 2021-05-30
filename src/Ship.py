@@ -15,11 +15,11 @@ class Ship:
     name: field(default_factory=str)
     length: field(default_factory=int)
 
+    def contains(self, px: int, py: int) -> bool:
+        return self.set_pos(px, py) in self.positions
+
     def hit(self, px: int, py: int) -> bool:
-        if (
-            self.set_pos(px, py) in self.positions
-            and not self.positions[self.set_pos(px, py)].hit
-        ):
+        if self.contains(px, py) and not self.positions[self.set_pos(px, py)].hit:
             self.positions[self.set_pos(px, py)].hit = True
             self.hit_points -= 1
             return True
