@@ -130,3 +130,10 @@ class TestShip:
             assert s.hit(int(x), int(y)) is False
             assert hp == s.hit_points
         assert s.is_sunk is True
+
+    def test_ship_contains(self, resource):
+        s = resource
+        b = src.Ship.Board.Board()
+        b.generate_board()
+        s.place_ship(0, 0, b)
+        assert s.contains(0, 0) is True
