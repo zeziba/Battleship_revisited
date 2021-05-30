@@ -23,7 +23,7 @@ class Board:
         if (size >= x >= 0) and (size >= y >= 0):
             self.__tiles[x + y * SIZE] = tile
             return self.__tiles[x + y * SIZE]
-        raise IndexError
+        raise IndexError(f"{tile.contains}: Cannot be placed at ({x},{y}) as it is out of bounds")
 
     def generate_board(self) -> None:
         self.__tiles = [Tile.Tile(None, False) for _ in range(SIZE * SIZE)]
