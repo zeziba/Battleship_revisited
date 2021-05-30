@@ -1,5 +1,6 @@
 import pytest
 import src.Game
+
 src.Game.TESTING = True
 
 
@@ -78,4 +79,3 @@ class TestGame:
 
     def test_game_game(self, game):
         pass
-
