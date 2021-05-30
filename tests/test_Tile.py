@@ -20,6 +20,11 @@ class TestTile:
     def test_tile_has_contains(self, tile):
         assert hasattr(tile, "contains")
 
+    def test_tile_contains(self, tile):
+        assert tile.contains is None
+        tile.contains = 1
+        assert tile.contains is not None
+
     def test_tile_init_hit(self, tile):
         assert tile.hit is False
 
