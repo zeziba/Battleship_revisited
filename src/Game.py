@@ -4,6 +4,8 @@ import src.Fleet as Fleet
 import src.GameRules as GameRules
 from dataclasses import dataclass, field
 
+TESTING = False
+
 
 @dataclass()
 class Game:
@@ -50,8 +52,9 @@ class Game:
             p.board.generate_board()
             p.fleet.generate()
             # Testing only
-            for ship in p.get_ships:
-                ship.place_ship(i := i + 1, 0, p.board)
+            if TESTING:
+                for ship in p.get_ships:
+                    ship.place_ship(i := i + 1, 0, p.board)
         self.start()
 
     def check_win(self) -> bool:
