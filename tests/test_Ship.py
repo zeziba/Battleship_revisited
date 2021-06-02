@@ -123,7 +123,7 @@ class TestShip:
         hp = s.hit_points
         assert s.is_sunk is False
         for key in s.positions:
-            y, x = key.split(",")
+            x, y = key.split(",")
             assert hp == s.hit_points
             assert s.hit(int(x), int(y)) is True
             hp -= 1
