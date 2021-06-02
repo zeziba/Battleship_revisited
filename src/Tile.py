@@ -21,7 +21,7 @@ class Tile:
 
     @contains.setter
     def contains(self, value):
-        if self.contains:
+        if self.contains is not None:
             raise IndexError(f"Location already has {self.contains}")
         self.__contains = value
 
