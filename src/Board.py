@@ -1,10 +1,9 @@
 from dataclasses import dataclass, field
 
+import GameRules
 import Tile
 
-import src.GameRules
-
-SIZE: int = src.GameRules.SIZE
+SIZE: int = GameRules.SIZE
 
 
 @dataclass()
@@ -19,7 +18,7 @@ class Board:
         return self.tiles[px + py * SIZE]
 
     def tiles_set(self, x: int, y: int, tile: Tile) -> Tile.Tile:
-        size = src.GameRules.SIZE - 1
+        size = SIZE - 1
         if (size >= x >= 0) and (size >= y >= 0):
             self.__tiles[x + y * SIZE] = tile
             return self.__tiles[x + y * SIZE]
