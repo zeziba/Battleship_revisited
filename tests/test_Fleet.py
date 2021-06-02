@@ -1,3 +1,5 @@
+from random import choice
+
 import pytest
 
 import src.Fleet
@@ -51,6 +53,67 @@ class TestGenerateFleet:
             f.fleet[ship].place_ship(0, 0, board)
         for ship in f.fleet:
             for pos in f.fleet[ship].positions:
-                y, x = pos.split(",")
+                x, y = pos.split(",")
                 assert f.hit(x, y) is True
         assert f.hit(0, 0) is False
+
+    def test_fleet_other_fleet(self, resource):
+        """Test Fleet:GeneralFleet:other_ships"""
+        ship = choice(list(src.Fleet.Fleet))
+        for s in resource.other_ships(ship):
+            assert s is not ship
+
+    def test_fleet_check_possible_placement(self, resource):
+        """Test the check possible placement from Fleet:GeneralFleet:check_possible_placement"""
+        fleet = resource
+        # Test all failing positions
+        for direction in list(src.Fleet.Ship.Direction):
+            for key, ship in fleet.fleet.items():
+                ship.directionality = direction
+                for xy in range(src.Fleet.GameRules.SIZE - 1):
+                    v = src.Fleet.GameRules.SIZE - ship.length
+                    x = v if direction is src.Fleet.Ship.Direction.HORIZONTAL else xy
+                    y = (
+                        v
+                        if direction is not src.Fleet.Ship.Direction.HORIZONTAL
+                        else xy
+                    )
+                    assert (
+                        fleet.can_place(ship, x, y) is False
+                    ), f"{ship}@(X: {x}, Y: {y}):{ship.directionality} should have failed"
+                for xy in range(src.Fleet.GameRules.SIZE - 1):
+                    v = -1
+                    x = v if direction is src.Fleet.Ship.Direction.HORIZONTAL else xy
+                    y = (
+                        v
+                        if direction is not src.Fleet.Ship.Direction.HORIZONTAL
+                        else xy
+                    )
+                    assert (
+                        fleet.can_place(ship, x, y) is False
+                    ), f"{ship}@(X: {x}, Y: {y}):{ship.directionality} should have failed"
+
+        # Test some passing positions
+        for direction in list(src.Fleet.Ship.Direction):
+            for key, ship in fleet.fleet.items():
+                ship.directionality = direction
+                for xy in range(src.Fleet.GameRules.SIZE - 1):
+                    x = (
+                        xy
+                        if direction is not src.Fleet.Ship.Direction.HORIZONTAL
+                        else 0
+                    )
+                    y = xy if direction is src.Fleet.Ship.Direction.HORIZONTAL else 0
+                    assert (
+                        fleet.can_place(ship, x, y) is True
+                    ), f"{ship}@(X: {x}, Y: {y}):{ship.directionality} should have passed"
+
+        # Test if can place ship on another ship
+        ships = [ship for ship in fleet.fleet]
+        board = src.Fleet.Ship.Board.Board()
+        board.generate_board()
+        fleet.fleet[ships[0]].place_ship(0, 0, board)
+        for other in fleet.other_ships(fleet.fleet[ships[0]]):
+            assert (
+                fleet.can_place(other, 0, 0) is False
+            ), f"{other}@(X: 0, Y: 0) should have failed"
