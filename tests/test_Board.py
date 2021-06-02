@@ -18,11 +18,15 @@ class TestBoard:
     def test_board_has_tiles_setter(self, board):
         assert hasattr(getattr(type(board), "tiles", None), "fset")
 
-    def test_board_tiles_setter(self, board):
+    def test_board_tiles_set(self, board):
         b = board
         b.generate_board()
+        ship_tile = src.Board.Tile.Tile(False, "Ship")
         assert b.get(0, 0).has is None
-        b.tiles_set(0, 0, src.Board.Tile.Tile(False, "Ship"))
+        b.tiles_set(0, 0, ship_tile)
+        for x, y in [(-1, 0), (0, -1), (10, 0), (0, 10)]:
+            with pytest.raises(IndexError):
+                b.tiles_set(x, y, ship_tile)
 
     def test_board_get(self, board):
         b = board
