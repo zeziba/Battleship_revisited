@@ -119,4 +119,3 @@ class TestGame:
             if g.check_win():
                 break
         assert g.stopped
-
