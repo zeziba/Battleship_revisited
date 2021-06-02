@@ -120,5 +120,3 @@ class TestGame:
                 break
         assert g.stopped
 
-    def test_game_game(self, game):
-        pass
