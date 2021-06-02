@@ -10,6 +10,12 @@ def game():
     yield src.Game.Game(players=players)
 
 
+@pytest.fixture()
+def game_players():
+    players = (True, True)
+    yield src.Game.Game(players=players)
+
+
 def get_coord():
     size = src.Game.GameRules.SIZE
     for i in range(size ** 2):
@@ -42,6 +48,7 @@ class TestGame:
         g = game
         assert g.stopped
         g.start()
+        assert not g.stopped
         g.stop()
         assert g.stopped
 
@@ -54,6 +61,7 @@ class TestGame:
         assert all(type(p) is src.Game.Player.Player for p in game.player)
 
     def test_game_set_up(self, game):
+        # Test AI setup
         g = game
         for p in g.player:
             assert len(p.fleet.fleet) == 0
@@ -66,6 +74,37 @@ class TestGame:
         # Just need to check if g.set_up still works if TESTING is disabled
         g.set_up()
         src.Game.TESTING = True
+
+    def test_game_set_up_players(self, game_players, monkeypatch):
+        # Test Players Setup
+        g = game_players
+
+        def generated_input(*args, **kwargs):
+            def xy(x: int = 0, y: int = 0, direction: str = "h"):
+                for i in range(src.Game.GameRules.SIZE):
+                    yield x, y
+                    yield x, y
+                    x = x + 1 if direction == "h" else 1
+                    y = y + 1 if direction == "v" else 0
+
+            inputs_coords = [f"{x} {y}" for x, y in xy()]
+            inputs_dir = ["v" for _ in range(len(inputs_coords))]
+            inputs = [
+                sub_item for item in zip(inputs_coords, inputs_dir) for sub_item in item
+            ]
+            for input_ in inputs:
+                yield input_
+
+        src.Game.TESTING = False
+        GEN = generated_input()
+        monkeypatch.setattr("builtins.input", lambda args: next(GEN, args))
+        for p in g.player:
+            assert len(p.fleet.fleet) == 0
+            assert len(p.board.tiles) == 0
+        g.set_up()
+        for p in g.player:
+            assert len(p.fleet.fleet) == len(src.Game.GameRules.FLEET)
+            assert len(p.board.tiles) == src.Game.GameRules.SIZE ** 2
 
     def test_game_check_win(self, game):
         g = game
