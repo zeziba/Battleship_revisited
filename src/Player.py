@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from enum import Enum, auto
-import Fleet
+
 import Board
+import Fleet
 
 
 class State(Enum):
