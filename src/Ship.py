@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field, MISSING
+from dataclasses import dataclass, field
 from enum import Enum, auto, unique
 
 import Board
@@ -25,16 +25,28 @@ class Ship:
             return True
         return False
 
+    @staticmethod
+    def possible_places(
+            start_x: int, start_y: int, length: int, directionality: Direction
+    ):
+        h = 1 if directionality is Direction.HORIZONTAL else 0
+        v = 0 if directionality is Direction.HORIZONTAL else 1
+        for i in range(length):
+            x = start_x + i * h
+            y = start_y + i * v
+            yield x, y
+
     def place_ship(self, start_x: int, start_y: int, board: Board.Board) -> bool:
         if len(self.positions) == 0:
-            h = 1 if self.directionality is Direction.HORIZONTAL else 0
-            v = 0 if self.directionality is Direction.HORIZONTAL else 1
-            for i in range(self.length):
-                x = start_x + i * h
-                y = start_y + i * v
-                self.positions[self.set_pos(x, y)] = board.tiles_set(
-                    x, y, Board.Tile.Tile(self, False)
-                )
+            for x, y in self.possible_places(
+                    start_x, start_y, self.length, self.directionality
+            ):
+                if Board.GameRules.check_xy(x, y):
+                    self.positions[self.set_pos(x, y)] = board.tiles_set(
+                        x, y, Board.Tile.Tile(self, False)
+                    )
+                else:
+                    raise IndexError(f"({x},{y}) is not a valid move")
             return True
         return False
 
@@ -48,7 +60,7 @@ class Ship:
 
     @staticmethod
     def set_pos(px, py) -> str:
-        return f"{py},{px}"
+        return f"{px},{py}"
 
     @property
     def directionality(self):
