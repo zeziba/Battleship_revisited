@@ -68,7 +68,6 @@ class Game:
                         ship.place_ship(i := i + 1, 0, p.board)
                 else:
                     ships = [ship for ship in p.get_ships]
-                    size = GameRules.SIZE
                     while ships:
                         ship = ships.pop()
                         print(GameRules.OUTPUTS[3].format(ship.name))
