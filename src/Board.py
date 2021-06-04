@@ -4,6 +4,8 @@ import GameRules
 import Tile
 
 SIZE: int = GameRules.SIZE
+EMPTYTILE = ". "
+HITTILE = "X "
 
 
 @dataclass()
@@ -28,3 +30,14 @@ class Board:
 
     def generate_board(self) -> None:
         self.__tiles = [Tile.Tile(None, False) for _ in range(SIZE * SIZE)]
+
+    def output_readable(self, hidden: bool = True) -> str:
+        nl = '\n'
+        if hidden:
+            return "".join([f"{HITTILE if tile.hit else EMPTYTILE}{nl if (index + 1) % SIZE == 0 else ''}" for index, tile in enumerate(self.tiles)])
+        else:
+            return "".join([f"{HITTILE if tile.contains else EMPTYTILE}{nl if (index + 1) % SIZE == 0 else ''}" for index, tile in enumerate(self.tiles)])
+
+    def output_array(self) -> tuple[int]:
+        score = lambda hit, contains: 1 if hit is True else 0 + 1 if contains is not None else 0
+        return tuple(score(tile.hit, tile.contains) for tile in self.tiles)
