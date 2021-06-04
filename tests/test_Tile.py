@@ -1,5 +1,3 @@
-from random import choice
-
 import pytest
 
 import src.Tile

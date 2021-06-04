@@ -1,6 +1,8 @@
-import pytest
-import src.Player
 from random import choice
+
+import pytest
+
+import src.Player
 
 
 def test_enum_state():

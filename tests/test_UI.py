@@ -1,16 +1,21 @@
+from random import randint
+
 import pytest
-import src.UI
+
 import src.GameRules
-from random import choice, randint
+import src.UI
+
 
 @pytest.fixture()
 def ui():
     UI = src.UI.UI()
     yield UI
 
+
 def generate_input(s_out: str = ""):
     while True:
         yield "".join([chr(randint(97, 123)) for _ in range(randint(1, 100))])
+
 
 def generate_numbers(s_out: str = ""):
     while True:
@@ -33,5 +38,3 @@ class TestUI:
             monkeypatch.setattr("builtins.input", lambda args: next(GEN, args))
             for _ in range(10):
                 ui.get_selection(cho)
-
-

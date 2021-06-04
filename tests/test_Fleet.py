@@ -79,7 +79,7 @@ class TestGenerateFleet:
                         else xy
                     )
                     assert (
-                        fleet.can_place(ship, x, y) is False
+                            fleet.can_place(ship, x, y) is False
                     ), f"{ship}@(X: {x}, Y: {y}):{ship.directionality} should have failed"
                 for xy in range(src.Fleet.GameRules.SIZE - 1):
                     v = -1
@@ -90,7 +90,7 @@ class TestGenerateFleet:
                         else xy
                     )
                     assert (
-                        fleet.can_place(ship, x, y) is False
+                            fleet.can_place(ship, x, y) is False
                     ), f"{ship}@(X: {x}, Y: {y}):{ship.directionality} should have failed"
 
         # Test some passing positions
@@ -105,7 +105,7 @@ class TestGenerateFleet:
                     )
                     y = xy if direction is src.Fleet.Ship.Direction.HORIZONTAL else 0
                     assert (
-                        fleet.can_place(ship, x, y) is True
+                            fleet.can_place(ship, x, y) is True
                     ), f"{ship}@(X: {x}, Y: {y}):{ship.directionality} should have passed"
 
         # Test if can place ship on another ship
@@ -115,5 +115,5 @@ class TestGenerateFleet:
         fleet.fleet[ships[0]].place_ship(0, 0, board)
         for other in fleet.other_ships(fleet.fleet[ships[0]]):
             assert (
-                fleet.can_place(other, 0, 0) is False
+                    fleet.can_place(other, 0, 0) is False
             ), f"{other}@(X: 0, Y: 0) should have failed"

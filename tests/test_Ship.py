@@ -2,8 +2,8 @@ from random import choice, randint
 
 import pytest
 
-import src.Ship
 import src.GameRules
+import src.Ship
 
 
 def direction() -> src.Ship.Direction:

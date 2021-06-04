@@ -17,5 +17,7 @@ of winning a game in roughly 60-80 moves which gives a human player many opportu
 # To Setup
 
 > pip install -r requirements.txt
+
 #### Run the tests
+
 > python -m pytest --cov=src --cov-config=.coveragerc --cov-report html tests/

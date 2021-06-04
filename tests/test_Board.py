@@ -49,7 +49,7 @@ class TestBoard:
         b.generate_board()
         b_out = b.output_readable()
         assert (
-            len(b_out) == src.Board.SIZE ** 2 * len(src.Board.HITTILE) + src.Board.SIZE
+                len(b_out) == src.Board.SIZE ** 2 * len(src.Board.HITTILE) + src.Board.SIZE
         )
         # print()
         # print(f"{b_out}")

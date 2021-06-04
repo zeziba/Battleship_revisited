@@ -76,15 +76,15 @@ class Game:
                         y = int(y)
                         h_v = self.UI.get_selection(GameRules.OUTPUTS[1])
                         if (
-                            not GameRules.check_xy(x, y)
-                            or h_v not in "hv"
-                            or any(
-                                s.contains(px, py)
-                                for s in p.get_ships
-                                for px, py in Ship.Ship.possible_places(
-                                    x, y, s.length, s.directionality
-                                )
+                                not GameRules.check_xy(x, y)
+                                or h_v not in "hv"
+                                or any(
+                            s.contains(px, py)
+                            for s in p.get_ships
+                            for px, py in Ship.Ship.possible_places(
+                                x, y, s.length, s.directionality
                             )
+                        )
                         ):
                             print(GameRules.OUTPUTS[4].format(ship.name, x, y, h_v))
                             ships.append(ship)
