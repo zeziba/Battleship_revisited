@@ -21,9 +21,9 @@ class TestTile:
         assert hasattr(tile, "contains")
 
     def test_tile_contains(self, tile):
-        assert tile.contains is None
+        assert tile.contains is False
         tile.contains = 1
-        assert tile.contains is not None
+        assert tile.contains is True
         with pytest.raises(IndexError):
             tile.contains = 5
 
