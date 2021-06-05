@@ -2,8 +2,11 @@ from enum import Enum, auto
 
 SIZE = 10
 
+EmptyTile = ". "
+HitTile = "X "
 
-def check_xy(x, y) -> bool:
+
+def check_xy(x: int, y: int) -> bool:
     """Checks if the x, y coords fall within the board"""
     size = SIZE - 1
     return (size >= x >= 0) and (size >= y >= 0)
@@ -23,6 +26,14 @@ OUTPUTS = (
     "Please enter in the starting location of the {}: x y\n\t",
     "Placing {}",
     "Failed to place {} at ({}, {}) with directionality {} as not a valid location.",
+    "Failed to place {} as input was mangled",
+    "Input must be in teh form of <int> <int> {}",
+    "\nExample:\n1 3",
+    "\nExample:\n<h|v>",
+    "Preparing to take a shot at {}",
+    "Shot at ({},{}) to hit {}",
+    "Coordinates are not valid, attempt again",
+    "Currently turn: {} with player: {} being targeted"
 )
 
 
