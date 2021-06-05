@@ -4,8 +4,8 @@ import GameRules
 import Tile
 
 SIZE: int = GameRules.SIZE
-EMPTYTILE = ". "
-HITTILE = "X "
+EMPTYTILE = GameRules.EmptyTile
+HITTILE = GameRules.HitTile
 
 
 @dataclass()
@@ -51,9 +51,9 @@ class Board:
     def output_array(self) -> tuple[int]:
         score = (
             lambda hit, contains: 1
-            if hit is True
-            else 0 + 1
-            if contains is not None
+            if hit is True and contains is not None
+            else 1
+            if hit is True and contains is None
             else 0
         )
         return tuple(score(tile.hit, tile.contains) for tile in self.tiles)
