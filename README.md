@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.com/zeziba/Battleship_revisited.svg?branch=master)](https://travis-ci.com/zeziba/Battleship_revisited)
+[![Coverage Status](https://coveralls.io/repos/github/zeziba/Battleship_revisited/badge.svg)](https://coveralls.io/github/zeziba/Battleship_revisited)
 
 ### Battle Ship - Revisited
 
