@@ -1,4 +1,6 @@
 import pytest
+from io import StringIO
+import sys
 
 import src.Game
 
@@ -77,6 +79,8 @@ class TestGame:
         src.Game.TESTING = True
 
     def test_game_set_up_players(self, game_players, monkeypatch):
+        output = sys.stdout
+        sys.stdout = StringIO()
         # Test Players Setup
         g = game_players
 
@@ -107,6 +111,8 @@ class TestGame:
             assert len(p.fleet.fleet) == len(src.Game.GameRules.FLEET)
             assert len(p.board.tiles) == src.Game.GameRules.SIZE ** 2
 
+        sys.stdout = output
+
     def test_game_check_win(self, game):
         g = game
         assert g.stopped
@@ -117,6 +123,6 @@ class TestGame:
             for p in g.player:
                 assert not g.stopped
                 p.fleet.hit(x, y)
-            if g.check_win():
+            if g.any_won:
                 break
         assert g.stopped
