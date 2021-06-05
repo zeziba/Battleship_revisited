@@ -27,7 +27,7 @@ class Ship:
 
     @staticmethod
     def possible_places(
-            start_x: int, start_y: int, length: int, directionality: Direction
+        start_x: int, start_y: int, length: int, directionality: Direction
     ):
         h = 1 if directionality is Direction.HORIZONTAL else 0
         v = 0 if directionality is Direction.HORIZONTAL else 1
@@ -39,7 +39,7 @@ class Ship:
     def place_ship(self, start_x: int, start_y: int, board: Board.Board) -> bool:
         if len(self.positions) == 0:
             for x, y in self.possible_places(
-                    start_x, start_y, self.length, self.directionality
+                start_x, start_y, self.length, self.directionality
             ):
                 if Board.GameRules.check_xy(x, y):
                     self.positions[self.set_pos(x, y)] = board.tiles_set(
@@ -61,6 +61,11 @@ class Ship:
     @staticmethod
     def set_pos(px, py) -> str:
         return f"{px},{py}"
+
+    @staticmethod
+    def get_xy_pos(pos: str) -> tuple[int, int]:
+        x, y = pos.split(",")
+        return int(x), int(y)
 
     @property
     def directionality(self):
