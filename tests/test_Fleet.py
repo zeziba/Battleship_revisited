@@ -49,12 +49,15 @@ class TestGenerateFleet:
         f = resource
         board = src.Fleet.Ship.Board.Board()
         board.generate_board()
-        for ship in f.fleet:
-            f.fleet[ship].place_ship(0, 0, board)
+        for index, ship in enumerate(f.fleet):
+            f.fleet[ship].place_ship(index, 0, board)
         for ship in f.fleet:
             for pos in f.fleet[ship].positions:
                 x, y = pos.split(",")
+                x = int(x)
+                y = int(y)
                 assert f.hit(x, y) is True
+                assert board.get(x, y).hit is True, f"{board.get(x, y)}"
         assert f.hit(0, 0) is False
 
     def test_fleet_other_fleet(self, resource):
