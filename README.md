@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/zeziba/Battleship_revisited.svg?branch=master)](https://travis-ci.com/zeziba/Battleship_revisited)
+
 ### Battle Ship - Revisited
 
 ###### This is a recreation of a program which I originally made when i first started to program. I have updated it to display the new ideas and techniques that I have learned.
