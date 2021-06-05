@@ -57,7 +57,11 @@ class Game:
     def __check(self, x: int, y: int, h_v: str, p: Player.Player):
         good_coords = not GameRules.check_xy(x, y)
         good_h_v = (h_v not in "hv") and (len(h_v) == 1)
-        good_place = any(s.contains(px, py) for s in p.get_ships for px, py in Ship.Ship.possible_places(x, y, s.length, s.directionality))
+        good_place = any(
+            s.contains(px, py)
+            for s in p.get_ships
+            for px, py in Ship.Ship.possible_places(x, y, s.length, s.directionality)
+        )
         return good_coords or good_h_v or good_place
 
     def set_up(self) -> None:
@@ -82,17 +86,25 @@ class Game:
                             x, y = self.UI.get_coords(GameRules.OUTPUTS[0])
                         except ValueError as error:
                             self.UI.output(GameRules.OUTPUTS[5].format(ship.name))
-                            self.UI.output(GameRules.OUTPUTS[6].format(GameRules.OUTPUTS[7]))
+                            self.UI.output(
+                                GameRules.OUTPUTS[6].format(GameRules.OUTPUTS[7])
+                            )
                             ships.append(ship)
                             continue
                         x = int(x)
                         y = int(y)
                         h_v = self.UI.get_selection(GameRules.OUTPUTS[1])
                         if self.__check(x, y, h_v, p):
-                            self.UI.output(GameRules.OUTPUTS[4].format(ship.name, x, y, h_v))
+                            self.UI.output(
+                                GameRules.OUTPUTS[4].format(ship.name, x, y, h_v)
+                            )
                             ships.append(ship)
                             continue
-                        ship.directionality = (Ship.Direction.HORIZONTAL if h_v == "h" else Ship.Direction.VERTICAL)
+                        ship.directionality = (
+                            Ship.Direction.HORIZONTAL
+                            if h_v == "h"
+                            else Ship.Direction.VERTICAL
+                        )
                         ship.place_ship(x, y, p.board)
         self.start()
 
