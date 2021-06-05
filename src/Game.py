@@ -32,9 +32,9 @@ class Game:
         self.UI = UI.UI()
 
     @property
-    def player(self):
-        for p in self.__players:
-            yield self.__players[p]
+    def player(self) -> iter:
+        for _p in self.__players:
+            yield self.__players[_p]
 
     def stop(self) -> None:
         self.state = GameRules.State.STOPPED
@@ -49,9 +49,16 @@ class Game:
     def __set_up(self) -> None:
         for index, i in enumerate(self.players):
             state = Player.State.AI if i is False else Player.State.PERSON
-            self.__players[f"p{index}"] = Player.Player(
-                state, Board.Board(), Fleet.GeneralFleet()
+            name = f"p{index}"
+            self.__players[name] = Player.Player(
+                name, state, Board.Board(), Fleet.GeneralFleet()
             )
+
+    def __check(self, x: int, y: int, h_v: str, p: Player.Player):
+        good_coords = not GameRules.check_xy(x, y)
+        good_h_v = (h_v not in "hv") and (len(h_v) == 1)
+        good_place = any(s.contains(px, py) for s in p.get_ships for px, py in Ship.Ship.possible_places(x, y, s.length, s.directionality))
+        return good_coords or good_h_v or good_place
 
     def set_up(self) -> None:
         self.__set_up()
@@ -70,41 +77,77 @@ class Game:
                     ships = [ship for ship in p.get_ships]
                     while ships:
                         ship = ships.pop()
-                        print(GameRules.OUTPUTS[3].format(ship.name))
-                        x, y = self.UI.get_selection(GameRules.OUTPUTS[0]).split(" ")
+                        self.UI.output(GameRules.OUTPUTS[3].format(ship.name))
+                        try:
+                            x, y = self.UI.get_coords(GameRules.OUTPUTS[0])
+                        except ValueError as error:
+                            self.UI.output(GameRules.OUTPUTS[5].format(ship.name))
+                            self.UI.output(GameRules.OUTPUTS[6].format(GameRules.OUTPUTS[7]))
+                            ships.append(ship)
+                            continue
                         x = int(x)
                         y = int(y)
                         h_v = self.UI.get_selection(GameRules.OUTPUTS[1])
-                        if (
-                                not GameRules.check_xy(x, y)
-                                or h_v not in "hv"
-                                or any(
-                            s.contains(px, py)
-                            for s in p.get_ships
-                            for px, py in Ship.Ship.possible_places(
-                                x, y, s.length, s.directionality
-                            )
-                        )
-                        ):
-                            print(GameRules.OUTPUTS[4].format(ship.name, x, y, h_v))
+                        if self.__check(x, y, h_v, p):
+                            self.UI.output(GameRules.OUTPUTS[4].format(ship.name, x, y, h_v))
                             ships.append(ship)
                             continue
-                        ship.directionality = (
-                            Ship.Direction.HORIZONTAL
-                            if h_v == "h"
-                            else Ship.Direction.VERTICAL
-                        )
+                        ship.directionality = (Ship.Direction.HORIZONTAL if h_v == "h" else Ship.Direction.VERTICAL)
                         ship.place_ship(x, y, p.board)
         self.start()
 
-    def check_win(self) -> bool:
+    @property
+    def any_won(self) -> bool:
         for p in self.player:
             if p.destroyed:
                 self.stop()
                 return True
         return False
 
+    def output_player(self, player: Player.Player, hidden: bool = True):
+        self.UI.output(player.board.output_readable(hidden=hidden))
+
+    @property
+    def __get_turn(self) -> iter:
+        turn = 0
+        max_turns = GameRules.SIZE ** 2
+        while turn < max_turns and not self.any_won:
+            for player in self.player:
+                yield turn, player
+            turn += 1
+
+    def __take_shot(self):
+        while True:
+            try:
+                self.UI.output(GameRules.OUTPUTS[9])
+                x, y = self.UI.get_coords(GameRules.OUTPUTS[0])
+            except ValueError as error:
+                self.UI.output(GameRules.OUTPUTS[11])
+            else:
+                if GameRules.check_xy(x, y):
+                    break
+                else:
+                    self.UI.output(GameRules.OUTPUTS[11])
+        return x, y
+
+    def __take_turn(self, player: Player.Player) -> None:
+        """
+        Take a turn, the presumption is that the given player is the player being worked on.
+        Meaning its the other players turn other than the given player.
+        """
+        self.UI.output(GameRules.OUTPUTS[9].format(player.name))
+        x, y = self.__take_shot()
+        tile_state = player.take_at_self_shot(x, y)
+        self.UI.output(GameRules.OUTPUTS[10].format(x, y, tile_state[1].contains))
+
+    def take_turns(self):
+        for turn, player in self.__get_turn:
+            self.UI.output(GameRules.OUTPUTS[12].format(turn, player.name))
+            self.__take_turn(player)
+
 
 if __name__ == "__main__":
     game = Game((False, True))
     game.set_up()
+    for p in game.player:
+        game.output_player(p, False)
