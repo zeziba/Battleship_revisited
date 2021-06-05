@@ -1,4 +1,4 @@
-from random import choice
+from random import choice, randint
 
 import pytest
 
@@ -14,6 +14,7 @@ def test_enum_state():
 @pytest.fixture()
 def player():
     return src.Player.Player(
+        "".join([chr(randint(97, 126)) for _ in range(10)]),
         choice(list(src.Player.State)),
         src.Player.Board.Board(),
         src.Player.Fleet.GeneralFleet(),
@@ -39,13 +40,15 @@ class TestPlayer:
     def test_player_has_get_ships(self, player):
         assert hasattr(player, "get_ships")
 
+    def test_player_has_name(self, player):
+        assert hasattr(player, "name")
+
     def test_player_get_ships(self, player):
         p = player
         p.generate_fleet()
-        b = src.Player.Board.Board()
-        b.generate_board()
+        p.board.generate_board()
         for index, ship in enumerate(p.fleet.fleet):
-            p.fleet.fleet[ship].place_ship(index, 0, b)
+            p.fleet.fleet[ship].place_ship(index, 0, p.board)
         for ship in p.get_ships:
             assert type(ship) is src.Player.Fleet.Ship.Ship
 
@@ -65,3 +68,16 @@ class TestPlayer:
         for ship in p.fleet.fleet:
             p.fleet.fleet[ship].hit_points = 0
         assert p.destroyed is True
+
+    def test_player_take_shot_at_self(self, player):
+        p = player
+        p.generate_fleet()
+        p.board.generate_board()
+        for index, ship in enumerate(p.fleet.fleet):
+            p.fleet.fleet[ship].place_ship(index, 0, p.board)
+        ship = choice(list(p.get_ships))
+        pos = choice(list(ship.positions))
+        x, y = src.Player.Fleet.Ship.Ship.get_xy_pos(pos)
+        hit_condition = p.take_at_self_shot(x, y)
+        assert hit_condition[0] is True, f"{x},{y} failed to hit the gather coords"
+        assert p.board.get(x, y).hit is True
