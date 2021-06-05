@@ -9,3 +9,6 @@ class UI:
 
     def get_selection(self, selection: str) -> str:
         return input(f"{selection}")
+
+    def output(self, selection: str) -> None:
+        print(f"{selection}")
