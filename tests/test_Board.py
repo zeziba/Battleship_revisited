@@ -34,7 +34,7 @@ class TestBoard:
         for index, _ in enumerate(b.tiles):
             # px + py * SIZE
             x, y = index % src.Board.SIZE, index // src.Board.SIZE
-            assert b.get(x, y) is not None
+            assert type(b.get(x, y)) is src.Board.Tile.Tile
 
     def test_board_generate_board(self, board):
         b = board
@@ -49,7 +49,7 @@ class TestBoard:
         b.generate_board()
         b_out = b.output_readable()
         assert (
-                len(b_out) == src.Board.SIZE ** 2 * len(src.Board.HITTILE) + src.Board.SIZE
+            len(b_out) == src.Board.SIZE ** 2 * len(src.Board.HITTILE) + src.Board.SIZE
         )
         # print()
         # print(f"{b_out}")
