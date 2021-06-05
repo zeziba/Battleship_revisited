@@ -33,7 +33,7 @@ OUTPUTS = (
     "Preparing to take a shot at {}",
     "Shot at ({},{}) to hit {}",
     "Coordinates are not valid, attempt again",
-    "Currently turn: {} with player: {} being targeted"
+    "Currently turn: {} with player: {} being targeted",
 )
 
 
