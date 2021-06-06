@@ -1,6 +1,10 @@
+from random import choice
+
 import pytest
 
 import src.Tile
+import src.Ship
+import src.GameRules
 
 
 @pytest.fixture()
@@ -33,3 +37,11 @@ class TestTile:
         t.hit = not t.hit
         assert t.hit is True
         t.hit = not t.hit
+
+    def test_tile_has_obj_return(self, tile):
+        name = choice(list(src.GameRules.FLEET.keys()))
+        length = src.GameRules.FLEET[name]
+        ship = src.Ship.Ship(name, length)
+        tile.contains = ship
+        assert tile.has is ship
+        assert type(tile.has) is src.Ship.Ship
