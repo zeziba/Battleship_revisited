@@ -4,6 +4,8 @@ SIZE = 10
 
 EmptyTile = ". "
 HitTile = "X "
+UnknownTile = "U "
+FillTile = "{} "
 
 
 def check_xy(x: int, y: int) -> bool:
@@ -27,13 +29,15 @@ OUTPUTS = (
     "Placing {}",
     "Failed to place {} at ({}, {}) with directionality {} as not a valid location.",
     "Failed to place {} as input was mangled",
-    "Input must be in teh form of <int> <int> {}",
+    "Input must be in the form of <int> <int> {}",
     "\nExample:\n1 3",
     "\nExample:\n<h|v>",
     "Preparing to take a shot at {}",
-    "Shot at ({},{}) to hit {}",
+    "Shot at ({},{}) {}",
     "Coordinates are not valid, attempt again",
-    "Currently turn: {} with player: {} being targeted",
+    "Currently turn: {} with player {} being targeted",
+    "{} has won the game!",
+    "Location has already been struck once before try again.",
 )
 
 

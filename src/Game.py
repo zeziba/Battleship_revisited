@@ -131,7 +131,6 @@ class Game:
     def __take_shot(self):
         while True:
             try:
-                self.UI.output(GameRules.OUTPUTS[9])
                 x, y = self.UI.get_coords(GameRules.OUTPUTS[0])
             except ValueError as error:
                 self.UI.output(GameRules.OUTPUTS[11])
@@ -142,24 +141,31 @@ class Game:
                     self.UI.output(GameRules.OUTPUTS[11])
         return x, y
 
-    def __take_turn(self, player: Player.Player) -> None:
+    def __take_turn(self, _player: Player.Player) -> None:
         """
         Take a turn, the presumption is that the given player is the player being worked on.
         Meaning its the other players turn other than the given player.
         """
-        self.UI.output(GameRules.OUTPUTS[9].format(player.name))
-        x, y = self.__take_shot()
-        tile_state = player.take_at_self_shot(x, y)
-        self.UI.output(GameRules.OUTPUTS[10].format(x, y, tile_state[1].contains))
+        while True:
+            self.UI.output(GameRules.OUTPUTS[9].format(_player.name))
+            x, y = self.__take_shot()
+            if _player.board.get(x, y).hit:
+                self.UI.output(GameRules.OUTPUTS[14])
+                continue
+            tile_state = _player.take_at_self_shot(x, y)
+            name = tile_state[1].has.name if tile_state[1].contains else "nothing"
+            self.UI.output(GameRules.OUTPUTS[10].format(x, y, name))
+            self.output_player(_player)
+            break
 
     def take_turns(self):
         for turn, player in self.__get_turn:
             self.UI.output(GameRules.OUTPUTS[12].format(turn, player.name))
             self.__take_turn(player)
+        self.UI.output(GameRules.OUTPUTS[13].format(next(self.player)))
 
 
 if __name__ == "__main__":
-    game = Game((False, True))
+    game = Game((False, False))
     game.set_up()
-    for p in game.player:
-        game.output_player(p, False)
+    game.take_turns()

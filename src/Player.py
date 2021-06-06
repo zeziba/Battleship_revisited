@@ -51,4 +51,6 @@ class Player:
         return all(self.fleet.fleet[ship].is_sunk for ship in self.fleet.fleet)
 
     def take_at_self_shot(self, x: int, y: int) -> tuple[bool, Board.Tile.Tile]:
-        return self.fleet.hit(x, y), self.board.get(x, y)
+        fleet, tile = self.fleet.hit(x, y), self.board.get(x, y)
+        tile.hit = True
+        return fleet, tile
