@@ -10,7 +10,7 @@ FLEET = {ship: GameRules.FLEET[ship.name] for ship in list(Fleet)}
 
 @dataclass
 class GeneralFleet:
-    __fleet: dict[Fleet: Ship.Ship] = field(default_factory=dict)
+    __fleet: dict[Fleet : Ship.Ship] = field(default_factory=dict)
 
     @property
     def fleet(self) -> dict:
@@ -46,9 +46,9 @@ class GeneralFleet:
                     sx, sy, ship.length, ship.directionality
                 )
                 if any(
-                        other.contains(px, py)
-                        for other in self.other_ships(ship)
-                        for px, py in possible
+                    other.contains(px, py)
+                    for other in self.other_ships(ship)
+                    for px, py in possible
                 ):
                     return False
                 return True
